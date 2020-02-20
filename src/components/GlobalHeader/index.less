@@ -5,25 +5,38 @@
   z-index: 999;
   padding: 0 30px;
   background: white;
-}
 
-.logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  margin-right: 4vw;
-  img {
-    height: 50px;
+  @media (max-width: 480px) {
+    padding: 0 10px;
   }
-}
 
-.login {
-  height: 100%;
-  margin-left: auto;
-  cursor: pointer;
+  .navbarMenu {
+    width: 50vw;
+    line-height: 64px;
+  }
 
-  .name {
-    margin-left: 1em;
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin-right: 4vw;
+    img {
+      height: 50px;
+
+      @media (max-width: 480px) {
+        height: 40px;
+      }
+    }
+  }
+
+  .login {
+    height: 100%;
+    margin-left: auto;
+    cursor: pointer;
+
+    .name {
+      margin-left: 1em;
+    }
   }
 }

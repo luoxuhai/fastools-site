@@ -40,7 +40,7 @@ export default withRouter(props => {
       <Feedback />
       <GlobalHeader />
       <Layout.Content className={styles.content}>
-        <Breadcrumb>{breadcrumbItems}</Breadcrumb>
+        <Breadcrumb>{location.pathname !== '/' && breadcrumbItems}</Breadcrumb>
         <div>{props.children}</div>
       </Layout.Content>
       <GlobalFooter />

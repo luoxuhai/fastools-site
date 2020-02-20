@@ -9,11 +9,11 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "antd": "^3.26.9",
-    "axios": "^0.19.2",
+    "antd": "^4.0.0-rc.5",
     "dva": "^2.6.0-beta.6",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "umi-request": "^1.2.19"
   },
   "devDependencies": {
     "@types/jest": "^23.3.12",

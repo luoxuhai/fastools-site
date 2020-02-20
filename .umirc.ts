@@ -4,7 +4,7 @@ import { IConfig } from 'umi-types';
 const config: IConfig = {
   treeShaking: true,
   theme: {
-    'primary-color': '#fac300',
+    'primary-color': '#4fc08d',
   },
   routes: [
     {
@@ -17,6 +17,9 @@ const config: IConfig = {
         { path: 'audio', component: '../pages/Audio/index' },
         { path: 'video', component: '../pages/Video/index' },
         { path: 'othor', component: '../pages/Othor/index' },
+        { path: 'exception/403', component: '../pages/Exception/403' },
+        { path: 'exception/404', component: '../pages/Exception/404' },
+        { path: 'exception/500', component: '../pages/Exception/500' },
       ],
     },
   ],

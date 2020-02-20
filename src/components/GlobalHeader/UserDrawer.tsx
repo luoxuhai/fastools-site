@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu, Dropdown, Avatar, Drawer, Icon } from 'antd';
+import { Drawer } from 'antd';
 
 export default ({ visible, onCloseDrawer }: any) => {
   return (
