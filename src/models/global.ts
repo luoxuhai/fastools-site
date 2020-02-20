@@ -4,6 +4,7 @@ export default {
   state: {
     loginPaneVisible: false,
     innerWidth: window.innerWidth,
+    loggingin: false
   },
 
   subscriptions: {},
@@ -22,6 +23,13 @@ export default {
       return {
         ...state,
         innerWidth: payload,
+      };
+    },
+
+    changeLoggingin(state: any, { payload }: any) {
+      return {
+        ...state,
+        loggingin: payload,
       };
     },
   },

@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Form, Input, message } from 'antd';
 import { connect } from 'dva';
 import styles from './index.less';
 import QQIcon from '@/assets/icons/QQ.svg';
+import { queryVerificationCode, login } from '@/services/user';
 
-export default connect(({ global, login }: any) => ({ ...global, ...login }))(({ loginPaneVisible, dispatch }: any) => {
+export default connect(({ global, login }: any) => ({ ...global, ...login }))(({ loginPaneVisible, user, dispatch }: any) => {
   const [form] = Form.useForm();
+  const [validateStatusTel, setValidateStatusTel]: any[] = useState(undefined);
+  const [helpTextTel, setHelpTextTel]: any[] = useState(undefined);
+  const [validateStatusCode, setValidateStatusCode]: any[] = useState(undefined);
+  const [helpTextCode, setHelpTextCode]: any[] = useState(undefined);
+  let tel = '';
 
   React.useEffect(() => {}, []);
 
@@ -16,20 +22,59 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
     });
   }
 
+  function getVerificationCode() {
+    if (tel) queryVerificationCode({ tel });
+    else {
+      setValidateStatusTel('error');
+      setHelpTextTel('请输入手机号码!');
+    }
+  }
+
+  function handleInputChange(e: any) {
+    tel = e.target.value;
+    setValidateStatusTel(undefined);
+    setHelpTextTel(undefined);
+    setValidateStatusCode(undefined);
+    setHelpTextCode(undefined);
+  }
+
   const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-    dispatch({
-      type: 'login/changeLoginStatus',
-      payload: true,
-    });
-    onCancel();
-    message.success({ content: '登录成功' });
+    login(values)
+      .then(res => {
+        if (res.token) {
+          message.success({ content: '登录成功' });
+          dispatch({
+            type: 'login/setUserInfo',
+            payload: res,
+          });
+          onCancel();
+        } else {
+          setValidateStatusCode('error');
+          setHelpTextCode('验证码错误!');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   function QQlogin() {
     window.loginWin = window.QC.Login.showPopup({
       appId: '101816819',
-      redirectURI: location.origin + '/home',
+      redirectURI: location.origin + '/login',
+    });
+    window.addEventListener('storage', e => {
+      if (e.key === 'access_token' && e.newValue) {
+        window.loginWin.close();
+        dispatch({
+          type: 'login/login',
+          payload: {
+            access_token: e.newValue,
+          },
+        });
+        window.localStorage.removeItem('access_token');
+        onCancel();
+      }
     });
   }
 
@@ -47,6 +92,8 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
         <Form form={form} onFinish={onFinish}>
           <Form.Item
             name="tel"
+            validateStatus={validateStatusTel}
+            help={helpTextTel}
             hasFeedback
             rules={[
               {
@@ -57,17 +104,21 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
               },
             ]}
           >
-            <Input className={styles.input} placeholder="请输入您的手机号码" type="tel" maxLength={11} />
+            <Input className={styles.input} onChange={handleInputChange} placeholder="请输入您的手机号码" type="tel" maxLength={11} />
           </Form.Item>
           <div className={styles.verificationCodeContainer}>
             <Form.Item
-              hasFeedback
               name="verificationCode"
+              validateStatus={validateStatusCode}
+              help={helpTextCode}
+              hasFeedback
               rules={[{ required: true, whitespace: true, message: '验证码错误!' }]}
             >
-              <Input className={styles.verificationCodeInput} placeholder="请输入验证码" maxLength={4} />
+              <Input className={styles.verificationCodeInput} onChange={handleInputChange} placeholder="请输入验证码" maxLength={4} />
             </Form.Item>
-            <Button className={styles.verificationCodeBtn}>获取验证码</Button>
+            <Button className={styles.verificationCodeBtn} onClick={getVerificationCode}>
+              获取验证码
+            </Button>
           </div>
           <Form.Item>
             <Button className={styles.button} block type="primary" htmlType="submit">

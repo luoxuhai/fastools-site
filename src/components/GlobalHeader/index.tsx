@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { UserOutline } from '@ant-design/icons';
 import NavLink from 'umi/navlink';
 import withRouter from 'umi/withRouter';
+import ReactAvatar from 'react-avatar';
 import UserDrawer from './UserDrawer';
 import Login from '@/components/Login';
 import styles from './index.less';
@@ -100,16 +101,15 @@ export default withRouter(
             ))}
           </Menu>
           <div className={styles.login}>
-            {login.status ? (
+            {login.token ? (
               <Dropdown overlay={menuHeaderDropdown}>
                 <span className={`${styles.action} ${styles.account}`}>
-                  <Avatar
-                    size="default"
-                    className={styles.avatar}
-                    src="https://upload.jianshu.io/users/upload_avatars/5493072/246aabc7-01de-4df6-b5d4-9c6e1293bed4.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/120/h/120"
-                    alt="avatar"
-                  />
-                  <span className={styles.name}>用户名</span>
+                  {login.user.avatar ? (
+                    <Avatar size="default" className={styles.avatar} src={login.user.avatar} alt="avatar" />
+                  ) : (
+                    <ReactAvatar className={styles.avatar} name={login.user.nickname} size="40" round />
+                  )}
+                  <span className={styles.name}>{login.user.nickname}</span>
                 </span>
               </Dropdown>
             ) : (

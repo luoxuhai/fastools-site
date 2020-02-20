@@ -17,6 +17,7 @@ const config: IConfig = {
         { path: 'audio', component: '../pages/Audio/index' },
         { path: 'video', component: '../pages/Video/index' },
         { path: 'othor', component: '../pages/Othor/index' },
+        { path: 'login', component: '../pages/Login/index' },
         { path: 'exception/403', component: '../pages/Exception/403' },
         { path: 'exception/404', component: '../pages/Exception/404' },
         { path: 'exception/500', component: '../pages/Exception/500' },

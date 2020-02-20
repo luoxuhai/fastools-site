@@ -3,7 +3,6 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
 import router from 'umi/router';
 // import cookie from 'react-cookies';
 
@@ -31,11 +30,8 @@ const codeMessage = {
 const errorHandler = error => {
   const { response = {} } = error;
   const errortext = codeMessage[response.status] || response.statusText;
-  const { status, url } = response;
-  notification.error({
-    message: `请求错误 ${status}: ${url}`,
-    description: errortext,
-  });
+  const { status } = response;
+  console.error(errortext);
   if (status === 401) {
     /* eslint-disable no-underscore-dangle */
   }
@@ -59,7 +55,6 @@ const request = extend({
   maxCache: 100,
   prefix: process.env.NODE_ENV === 'production' ? 'https://api.fastools.cn' : 'http://127.0.0.1:8099',
   errorHandler,
-  credentials: 'include',
 });
 
 // request拦截器, 改变url 或 options.
