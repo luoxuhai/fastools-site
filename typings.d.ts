@@ -8,4 +8,5 @@ interface Window {
   loginWin: any;
   QC: any;
   g_app: any;
+  canvas: Element;
 }

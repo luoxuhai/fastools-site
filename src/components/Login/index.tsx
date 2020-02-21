@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Input, message } from 'antd';
 import { connect } from 'dva';
+import Verification from './Verification';
+import { getCountDown } from '@/utils/utils';
 import styles from './index.less';
 import QQIcon from '@/assets/icons/QQ.svg';
 import { queryVerificationCode, login } from '@/services/user';
 
+let tel = '';
+let loading = false;
+
 export default connect(({ global, login }: any) => ({ ...global, ...login }))(({ loginPaneVisible, user, dispatch }: any) => {
-  const [form] = Form.useForm();
   const [validateStatusTel, setValidateStatusTel]: any[] = useState(undefined);
   const [helpTextTel, setHelpTextTel]: any[] = useState(undefined);
   const [validateStatusCode, setValidateStatusCode]: any[] = useState(undefined);
   const [helpTextCode, setHelpTextCode]: any[] = useState(undefined);
-  let tel = '';
+  const [visible, setVisible]: any[] = useState(false);
+  const [buttonText, setButtonText]: any[] = useState('获取验证码');
 
   React.useEffect(() => {}, []);
 
@@ -23,8 +28,10 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
   }
 
   function getVerificationCode() {
-    if (tel) queryVerificationCode({ tel });
-    else {
+    if (loading) return;
+    if (tel) {
+      setVisible(true);
+    } else {
       setValidateStatusTel('error');
       setHelpTextTel('请输入手机号码!');
     }
@@ -36,6 +43,20 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
     setHelpTextTel(undefined);
     setValidateStatusCode(undefined);
     setHelpTextCode(undefined);
+  }
+
+  function handleOK() {
+    setTimeout(() => setVisible(false), 500);
+
+    getCountDown(60, (time: number) => {
+      if (time === 0) {
+        loading = false;
+        setButtonText('获取验证码');
+      } else {
+        setButtonText(time + '秒后重新获取');
+        loading = true;
+      }
+    });
   }
 
   const onFinish = (values: any) => {
@@ -79,7 +100,7 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
   }
 
   return (
-    <div>
+    <>
       <Modal
         className={styles.modal}
         visible={loginPaneVisible}
@@ -89,7 +110,7 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
         width={400}
         footer={null}
       >
-        <Form form={form} onFinish={onFinish}>
+        <Form onFinish={onFinish}>
           <Form.Item
             name="tel"
             validateStatus={validateStatusTel}
@@ -117,7 +138,7 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
               <Input className={styles.verificationCodeInput} onChange={handleInputChange} placeholder="请输入验证码" maxLength={4} />
             </Form.Item>
             <Button className={styles.verificationCodeBtn} onClick={getVerificationCode}>
-              获取验证码
+              {buttonText}
             </Button>
           </div>
           <Form.Item>
@@ -133,6 +154,12 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
           </li>
         </ul>
       </Modal>
-    </div>
+      <Verification
+        visible={visible}
+        onOk={handleOK}
+        onCancel={() => setVisible(false)}
+        onVerificationCode={() => queryVerificationCode({ tel }).catch(() => message.error({ content: '请1小时后再试!' }))}
+      />
+    </>
   );
 });
