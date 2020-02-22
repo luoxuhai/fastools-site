@@ -6,6 +6,7 @@ import withRouter from 'umi/withRouter';
 import GlobalFooter from '@/components/GlobalFooter';
 import GlobalHeader from '@/components/GlobalHeader';
 import Feedback from '@/components/Feedback';
+import Pay from '@/components/Pay';
 import styles from './index.less';
 
 const breadcrumbNameMap: any = {
@@ -23,6 +24,9 @@ export default withRouter(
 
     const extraBreadcrumbItems = pathSnippets.map((_: any, index: any) => {
       const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+      console.log(url);
+      if (!breadcrumbNameMap[url]) breadcrumbNameMap[url] = '工具';
+
       return (
         <Breadcrumb.Item key={url}>
           <Link to={url}>{breadcrumbNameMap[url]}</Link>
@@ -42,8 +46,9 @@ export default withRouter(
           <BackTop className={styles.backtop} />
           <Feedback />
           <GlobalHeader />
+          <Pay />
           <Layout.Content className={styles.content}>
-            <Breadcrumb>{location.pathname !== '/' && breadcrumbItems}</Breadcrumb>
+            <Breadcrumb className={styles.breadcrumb}>{location.pathname !== '/' && breadcrumbItems}</Breadcrumb>
             <div>{props.children}</div>
           </Layout.Content>
           <GlobalFooter />

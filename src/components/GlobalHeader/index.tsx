@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Dropdown, Avatar, Button } from 'antd';
+import { Layout, Menu, Dropdown, Avatar, Button, Modal } from 'antd';
 import { connect } from 'dva';
-import { UserOutline } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import NavLink from 'umi/navlink';
 import withRouter from 'umi/withRouter';
 import ReactAvatar from 'react-avatar';
 import UserDrawer from './UserDrawer';
 import Login from '@/components/Login';
 import styles from './index.less';
-import logo from '@/assets/icons/logo.svg';
-import logoLarge from '@/assets/icons/logo-large.png';
 
+const logo = 'https://fastools.oss-cn-hangzhou.aliyuncs.com/images/logo.svg';
+const logoLarge = 'https://fastools.oss-cn-hangzhou.aliyuncs.com/images/logo-large.png?x-oss-process=style/fade';
 const navs = [
   {
     title: '首 页',
@@ -58,21 +58,28 @@ export default withRouter(
     function handleNavbarClick() {}
 
     function logout() {
-      dispatch({
-        type: 'login/changeLoginStatus',
-        payload: false,
+      Modal.confirm({
+        title: '确认退出登录?',
+        icon: <ExclamationCircleOutlined />,
+        cancelText: '取消',
+        okText: '确认',
+        onOk() {
+          dispatch({
+            type: 'login/logout',
+          });
+        },
       });
     }
 
     const menuHeaderDropdown = (
       <Menu className={styles.menu} onClick={handelSelectMenuClick}>
         <Menu.Item key="center">
-          {/* <UserOutline /> */}
+          <UserOutlined />
           个人中心
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item onClick={logout} key="logout">
-          {/* <Icon type="logout" /> */}
+          <LogoutOutlined />
           退出登录
         </Menu.Item>
       </Menu>
@@ -103,14 +110,14 @@ export default withRouter(
           <div className={styles.login}>
             {login.token ? (
               <Dropdown overlay={menuHeaderDropdown}>
-                <span className={`${styles.action} ${styles.account}`}>
+                <div className={styles.userContainer}>
                   {login.user.avatar ? (
                     <Avatar size="default" className={styles.avatar} src={login.user.avatar} alt="avatar" />
                   ) : (
                     <ReactAvatar className={styles.avatar} name={login.user.nickname} size="40" round />
                   )}
                   <span className={styles.name}>{login.user.nickname}</span>
-                </span>
+                </div>
               </Dropdown>
             ) : (
               <Button onClick={handelShowLoginPane} type="primary">

@@ -3,6 +3,7 @@ export default {
 
   state: {
     loginPaneVisible: false,
+    payPaneVisible: false,
     innerWidth: window.innerWidth,
     loggingin: false
   },
@@ -16,6 +17,13 @@ export default {
       return {
         ...state,
         loginPaneVisible: payload,
+      };
+    },
+
+    changePayPaneVisible(state: any, { payload }: any) {
+      return {
+        ...state,
+        payPaneVisible: payload,
       };
     },
 

@@ -33,13 +33,18 @@
   }
 
   .login {
-    height: 100%;
     margin-left: auto;
-    cursor: pointer;
 
-    .name {
-      .textOverflow();
-      margin-left: 1em;
+    .userContainer {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      .name {
+        .textOverflow();
+        max-width: 80px;
+        margin-left: 1em;
+      }
     }
   }
 }

@@ -9,8 +9,11 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.0.0-alpha.19",
     "antd": "^4.0.0-rc.5",
+    "dayjs": "^1.8.20",
     "dva": "^2.6.0-beta.6",
+    "localforage": "^1.7.3",
     "react": "^16.12.0",
     "react-avatar": "^3.9.1",
     "react-dom": "^16.12.0",

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Input, message } from 'antd';
 import { connect } from 'dva';
+import localforage from 'localforage';
 import Verification from './Verification';
 import { getCountDown } from '@/utils/utils';
 import styles from './index.less';
-import QQIcon from '@/assets/icons/QQ.svg';
 import { queryVerificationCode, login } from '@/services/user';
+
+const QQIcon = 'https://fastools.oss-cn-hangzhou.aliyuncs.com/images/QQ.svg';
 
 let tel = '';
 let loading = false;
@@ -68,6 +70,7 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
             type: 'login/setUserInfo',
             payload: res,
           });
+          localforage.setItem('user', res);
           onCancel();
         } else {
           setValidateStatusCode('error');

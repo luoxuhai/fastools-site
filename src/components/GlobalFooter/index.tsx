@@ -1,8 +1,8 @@
 import React from 'react';
-import { Layout, Menu, Divider } from 'antd';
+import { Layout, Divider } from 'antd';
 import styles from './index.less';
 
-const { Header, Content, Footer } = Layout;
+const qrcode = 'https://fastools.oss-cn-hangzhou.aliyuncs.com/images/qrcode.jpg?x-oss-process=style/fade';
 
 const contact = [
   {
@@ -88,8 +88,8 @@ const links = [
 
 export default () => {
   return (
-    <Footer className={styles.footer}>
-      <img className={styles.QRimg} src="https://www.logosc.cn/img/logoscQR.jpg" alt="公众号" />
+    <Layout.Footer className={styles.footer}>
+      <img className={styles.QRimg} src={qrcode} alt="公众号" />
       <div className={styles.contact}>
         <h3>联系我们:</h3>
         <ul>
@@ -117,12 +117,15 @@ export default () => {
         </ul>
       </div>
       <Divider />
-      <p className={styles.copyright}>
+      <div className={styles.copyright}>
         Copyright © 2019 - {new Date().getFullYear()} fastools.cn All Rights Reserved
         <a href="http://www.miitbeian.gov.cn/" target="_blank">
           &nbsp;&nbsp;沪ICP备11048151号-6
         </a>
-      </p>
-    </Footer>
+        <a href="https://myssl.com/www.fastools.cn?from=mysslid" target="_blank">
+          <img src="https://static.myssl.com/res/images/myssl-id3.png" style={{ maxHeight: 50, display: 'block', margin: '0 auto' }} />
+        </a>
+      </div>
+    </Layout.Footer>
   );
 };
