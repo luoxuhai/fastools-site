@@ -21,8 +21,8 @@ export default {
         return;
       }
 
+      window.loginWin.close();
       message.success({ content: '登录成功' });
-      localforage.setItem('user', result);
 
       yield put({
         type: 'setUserInfo',
@@ -30,21 +30,28 @@ export default {
       });
     },
 
-    *logout({ payload }: any, { call, put }: any) {
-      localforage.removeItem('user');
-
+    *logout(_: any, { put }: any) {
       yield put({
-        type: 'setUserInfo',
-        payload: { user: {}, token: '' },
+        type: 'clearUserInfo',
       });
     },
   },
 
   reducers: {
     setUserInfo(state: any, { payload }: any) {
+      localforage.setItem('user', payload);
       return {
         ...state,
         ...payload,
+      };
+    },
+
+    clearUserInfo(state: any) {
+      localforage.removeItem('user');
+      return {
+        ...state,
+        user: {},
+        token: '',
       };
     },
   },

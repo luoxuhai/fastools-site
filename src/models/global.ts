@@ -5,7 +5,8 @@ export default {
     loginPaneVisible: false,
     payPaneVisible: false,
     innerWidth: window.innerWidth,
-    loggingin: false
+    loggingin: false,
+    breadcrumbName: 'zip',
   },
 
   subscriptions: {},
@@ -38,6 +39,13 @@ export default {
       return {
         ...state,
         loggingin: payload,
+      };
+    },
+
+    setBreadcrumbName(state: any, { payload }: any) {
+      return {
+        ...state,
+        breadcrumbName: payload,
       };
     },
   },

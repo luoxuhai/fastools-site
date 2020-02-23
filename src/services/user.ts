@@ -8,7 +8,9 @@ interface ILoginPayload {
 
 export const queryCurrent = async () => request(`/v1/user_access/current/${'luoxuhai'}`);
 
-export const query = async () => request('/v1/user_access/index');
+export const queryUser = async () => request('/v1/users/all');
+
+export const queryVipExpires = async () => request('/v1/users/vip_expires');
 
 export const login = async (payload: ILoginPayload) => request('/v1/users/login', { method: 'post', data: payload });
 

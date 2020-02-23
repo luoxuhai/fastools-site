@@ -37,13 +37,13 @@ const errorHandler = error => {
   }
   // environment should not be used
   if (status === 403) {
-    router.push('/exception/403');
+    router.replace('/exception/403');
   }
   if (status <= 504 && status >= 500) {
-    router.push('/exception/500');
+    router.replace('/exception/500');
   }
   if (status >= 404 && status < 422) {
-    router.push('/exception/404');
+    router.replace('/exception/404');
   }
   return response;
 };
@@ -53,12 +53,14 @@ const errorHandler = error => {
 
 const request = extend({
   maxCache: 100,
-  prefix: process.env.NODE_ENV === 'production' ? 'https://api.fastools.cn' : 'http://127.0.0.1:8099',
+  prefix: process.env.NODE_ENV === 'production' ? 'https://api.fastools.cn' : 'http://127.0.0.1:8099', // http://testluo.xiaomy.net
   errorHandler,
 });
 
 // request拦截器, 改变url 或 options.
 request.interceptors.request.use((url, options) => {
+  options.headers.Authorization = `Bearer ${window.g_app._store.getState().login.token}`;
+
   return {
     url: `${url}`,
     options: { ...options, interceptors: true },

@@ -1,4 +1,5 @@
 import localforage from 'localforage';
+import { queryUser } from '@/services/user';
 
 window.addEventListener('resize', e => {
   window.g_app._store.dispatch({
@@ -7,11 +8,21 @@ window.addEventListener('resize', e => {
   });
 });
 
-localforage.iterate((value, key) => {
-  // 此回调函数将对所有 key/value 键值对运行
-  if (key === 'user')
+localforage.iterate((value: any, key: string) => {
+  if (key === 'user') {
     window.g_app._store.dispatch({
       type: 'login/setUserInfo',
       payload: value,
     });
+
+    queryUser().then(res => {
+      window.g_app._store.dispatch({
+        type: 'login/setUserInfo',
+        payload: {
+          user: res,
+          token: value.token,
+        },
+      });
+    });
+  }
 });

@@ -89,7 +89,6 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
     });
     window.addEventListener('storage', e => {
       if (e.key === 'access_token' && e.newValue) {
-        window.loginWin.close();
         dispatch({
           type: 'login/login',
           payload: {
@@ -157,12 +156,14 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
           </li>
         </ul>
       </Modal>
-      <Verification
-        visible={visible}
-        onOk={handleOK}
-        onCancel={() => setVisible(false)}
-        onVerificationCode={() => queryVerificationCode({ tel }).catch(() => message.error({ content: '请1小时后再试!' }))}
-      />
+      {visible && (
+        <Verification
+          visible={visible}
+          onOk={handleOK}
+          onCancel={() => setVisible(false)}
+          onVerificationCode={() => queryVerificationCode({ tel }).catch(() => message.error({ content: '请1小时后再试!' }))}
+        />
+      )}
     </>
   );
 });

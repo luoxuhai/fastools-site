@@ -34,7 +34,7 @@ const navs = [
   },
   {
     title: '其 他',
-    link: '/othor',
+    link: '/other',
   },
 ];
 
@@ -55,7 +55,16 @@ export default withRouter(
       });
     }
 
-    function handleNavbarClick() {}
+    function handleNavbarClick(e: any) {
+      dispatch({
+        type: 'tool/queryTools',
+        payload: {
+          page: 1,
+          per_page: 10,
+          tool_type: e.key.replace('/', ''),
+        },
+      });
+    }
 
     function logout() {
       Modal.confirm({

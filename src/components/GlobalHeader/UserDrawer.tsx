@@ -43,7 +43,7 @@ const data = [
 ];
 
 export default connect(({ global, login }: any) => ({ ...global, login }))(
-  ({ login, innerWidth, visible, onCloseDrawer, dispatch }: any) => {
+  ({ login: { user }, innerWidth, visible, onCloseDrawer, dispatch }: any) => {
     function handlePay() {
       dispatch({
         type: 'global/changePayPaneVisible',
@@ -62,17 +62,17 @@ export default connect(({ global, login }: any) => ({ ...global, login }))(
         visible={visible}
       >
         <div className={styles.user}>
-          {login.user.avatar ? (
-            <Avatar size="default" className={styles.avatar} src={login.user.avatar} alt="avatar" />
+          {user.avatar ? (
+            <Avatar size="default" className={styles.avatar} src={user.avatar} alt="avatar" />
           ) : (
-            <ReactAvatar className={styles.avatar} name={login.user.nickname} size="60" round />
+            <ReactAvatar className={styles.avatar} name={user.nickname} size="60" round />
           )}
           <div className={styles.userInfo}>
-            <h2>{login.user.nickname}</h2>
+            <h2>{user.nickname}</h2>
             <div className={styles.vipContainer}>
-              <h4>会员到期:{dayjs('2019-11-20T08:21:51.972Z').format('YYYY-MM-DD')}</h4>
-              <Button className={styles.payButton} onClick={handlePay} type="primary" danger>
-                续费
+              {user.vip_expires && <h4>会员到期:{user.vip_expires}</h4>}
+              <Button onClick={handlePay} type="primary" danger>
+                {user.vip_expires ? '续费' : '充值VIP'}
               </Button>
             </div>
           </div>
