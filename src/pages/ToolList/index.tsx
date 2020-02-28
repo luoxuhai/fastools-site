@@ -1,78 +1,68 @@
 import React, { Component } from 'react';
-import { Avatar, Card, Tag, Spin } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Spin, Button } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
-import Link from 'umi/link';
-import { queryTools, EToolType } from '@/services/tool';
+import { ToolList, NavNameMap } from '@/components/ToolList';
 import styles from './index.less';
 
-const NavNameMap: any = {
-  doc: '文档',
-  image: '图像',
-  audio: '音频',
-  video: '视频',
-  other: '其他',
-};
-
-@connect(({ tool }) => ({
+@connect(({ tool, global }) => ({
   tools: tool.tools,
+  currentPage: tool.currentPage,
+  totalPage: tool.totalPage,
+  isClickNavbar: global.isClickNavbar,
 }))
-class ToolList extends Component {
+class ToolListPage extends Component {
   componentDidMount() {
-    const id = this.props.match.params.id;
+    const { isClickNavbar, dispatch, match }: any = this.props;
+    const id = match.params.id;
     if (!NavNameMap[id]) {
       router.replace('/exception/404');
       return;
     }
 
-    this.props.dispatch({
+    if (isClickNavbar) return;
+
+    dispatch({
       type: 'tool/queryTools',
       payload: {
         page: 1,
-        per_page: 10,
+        per_page: 9,
         tool_type: id,
+        loadMore: false,
       },
     });
   }
 
-  handleToDetail = ({ alias, tool_type }: any) => {
-    router.push(`/${tool_type}/${alias}`);
+  handleLoadMore = () => {
+    const { dispatch, match, currentPage }: any = this.props;
+
+    dispatch({
+      type: 'tool/queryTools',
+      payload: {
+        page: currentPage + 1,
+        per_page: 9,
+        tool_type: match.params.id,
+        loadMore: true,
+      },
+    });
   };
 
   render() {
-    const { tools } = this.props;
+    const { tools, currentPage, totalPage, loading }: any = this.props;
+
     return (
       <Spin spinning={!tools.length} tip="加载中...">
         <div className={styles.container}>
-          <Card className={styles.card} title="全部">
-            {tools.map((item: any) => (
-              <Card.Grid className={styles.cardItem} key={item?._id}>
-                <div onClick={() => this.handleToDetail(item)}>
-                  <header className={styles.header}>
-                    <Avatar src={item.cover} size="large" />
-                    <h2 className={styles.title}>
-                      <Link to={`/${item.tool_type}/${item.alias}`}>{item.title}</Link>
-                    </h2>
-                  </header>
-                  <p className={styles.description}>{item.desc}</p>
-                  <footer className={styles.footer}>
-                    <Tag className={styles.tag} color="#4fc08d">
-                      <Link to={`/${item.tool_type}`}>{NavNameMap[item.tool_type]}</Link>
-                    </Tag>
-                    <div className={styles.views}>
-                      <EyeOutlined />
-                      <span className={styles.viewsText}>{item.views_count}</span>
-                    </div>
-                  </footer>
-                </div>
-              </Card.Grid>
-            ))}
-          </Card>
+          <ToolList tools={tools} title="全部" />
+          {currentPage < totalPage && tools.length && (
+            <Button className={styles.loadMore} loading={loading} onClick={this.handleLoadMore} type="primary" shape="round" size="large">
+              加载更多
+            </Button>
+          )}
         </div>
       </Spin>
     );
   }
 }
 
-export default ToolList;
+export default ToolListPage;

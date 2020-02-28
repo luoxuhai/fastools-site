@@ -3,6 +3,7 @@ import { IConfig } from 'umi-types';
 // ref: https://umijs.org/config/
 const config: IConfig = {
   treeShaking: true,
+  devtool: false,
   theme: {
     'primary-color': '#4fc08d',
   },

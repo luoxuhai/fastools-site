@@ -10,4 +10,6 @@ interface Window {
   QC: any;
   g_app: any;
   canvas: Element;
+  supportCSS3: Function;
+  tool: any;
 }

@@ -1,8 +1,7 @@
-
 // service-worker.js
 
 // Set this to true for production
-var doCache = false;
+var doCache = true;
 
 // Name our cache
 var CACHE_NAME = 'fastools-cache-v1';
@@ -31,7 +30,7 @@ window.addEventListener('install', function(event) {
       caches.open(CACHE_NAME).then(function(cache) {
         // Get the assets manifest so we can see what our js file is named
         // This is because webpack hashes it
-        fetch('asset-manifest.json')
+        fetch('manifest.json')
           .then(response => {
             response.json();
           })
@@ -57,4 +56,9 @@ window.addEventListener('fetch', function(event) {
       }),
     );
   }
+});
+
+window.addEventListener('sw.updated', e => {
+  console.log('updated');
+  e.detail.update();
 });

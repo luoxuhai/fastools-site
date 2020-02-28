@@ -1,119 +1,93 @@
-import React from 'react';
-import { Drawer, Avatar, Tabs, List, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Avatar, Tabs, List, Button, Spin, Empty } from 'antd';
 import { ClockCircleOutlined, StarOutlined } from '@ant-design/icons';
 import { connect } from 'dva';
 import ReactAvatar from 'react-avatar';
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import styles from './UserDrawer.less';
+import { queryUserSpace } from '@/services/user';
 
-dayjs.extend(customParseFormat);
-
-const data = [
+const tabs = [
   {
-    title: 'Ant Design Title 1',
+    title: '我的收藏',
+    dataKey: 'star_list',
   },
   {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
+    title: '浏览记录',
+    dataKey: 'views_list',
   },
 ];
 
-export default connect(({ global, login }: any) => ({ ...global, login }))(
-  ({ login: { user }, innerWidth, visible, onCloseDrawer, dispatch }: any) => {
-    function handlePay() {
-      dispatch({
-        type: 'global/changePayPaneVisible',
-        payload: true,
-      });
-    }
+export default connect(({ login }: any) => ({ user: login.user }))(({ user, dispatch }: any) => {
+  const [loading, setLoading] = useState(true);
 
-    return (
-      <Drawer
-        className={styles.drawer}
-        title="个人中心"
-        placement="right"
-        onClose={onCloseDrawer}
-        width={360}
-        closable={true}
-        visible={visible}
-      >
-        <div className={styles.user}>
-          {user.avatar ? (
-            <Avatar size="default" className={styles.avatar} src={user.avatar} alt="avatar" />
-          ) : (
-            <ReactAvatar className={styles.avatar} name={user.nickname} size="60" round />
-          )}
-          <div className={styles.userInfo}>
-            <h2>{user.nickname}</h2>
-            <div className={styles.vipContainer}>
-              {user.vip_expires && <h4>会员到期:{user.vip_expires}</h4>}
-              <Button onClick={handlePay} type="primary" danger>
-                {user.vip_expires ? '续费' : '充值VIP'}
-              </Button>
-            </div>
+  useEffect(() => {
+    queryUserSpace().then(res => {
+      if (!res._id) return;
+      setLoading(false);
+      dispatch({
+        type: 'login/setUserInfo',
+        payload: { user: res },
+      });
+    });
+    return () => {};
+  }, []);
+
+  function handlePay() {
+    dispatch({
+      type: 'global/changePayPaneVisible',
+      payload: true,
+    });
+  }
+
+  return (
+    <Spin spinning={loading}>
+      <div className={styles.user}>
+        {user.avatar ? (
+          <Avatar size="default" className={styles.avatar} src={user.avatar} alt="avatar" />
+        ) : (
+          <ReactAvatar className={styles.avatar} name={user.nickname} size="60" round />
+        )}
+        <div className={styles.userInfo}>
+          <h2>{user.nickname}</h2>
+          <div className={styles.vipContainer}>
+            {user.vip_expires && <h4>会员到期:{user.vip_expires}</h4>}
+            <Button onClick={handlePay} type="primary" danger>
+              {user.vip_expires ? '续费' : '充值VIP'}
+            </Button>
           </div>
         </div>
-        <Tabs defaultActiveKey="1">
+      </div>
+      <Tabs defaultActiveKey="0">
+        {tabs.map((item, index) => (
           <Tabs.TabPane
             tab={
               <span>
-                <StarOutlined />
-                我的收藏
+                {index === 0 ? <StarOutlined /> : <ClockCircleOutlined />}
+                {item.title}
               </span>
             }
-            key="1"
-          ></Tabs.TabPane>
-          <Tabs.TabPane
-            tab={
-              <span>
-                <ClockCircleOutlined />
-                浏览记录
-              </span>
-            }
-            key="2"
+            key={String(index)}
           >
-            <div className={styles.list}>
+            {user[item.dataKey] ? (
               <List
                 itemLayout="horizontal"
-                dataSource={data}
-                renderItem={item => (
+                dataSource={user[item.dataKey]}
+                renderItem={(item: any) => (
                   <List.Item>
                     <List.Item.Meta
-                      avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                      title={<a href="https://ant.design">{item.title}</a>}
-                      description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                      avatar={<Avatar src={item.cover} />}
+                      title={<a href={`/${item.tool_type}/${item.alias}`} target="_blank">{item.title}</a>}
+                      description={<p className={styles.description}>{item.desc}</p>}
                     />
                   </List.Item>
                 )}
               />
-            </div>
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
           </Tabs.TabPane>
-        </Tabs>
-      </Drawer>
-    );
-  },
-);
+        ))}
+      </Tabs>
+    </Spin>
+  );
+});

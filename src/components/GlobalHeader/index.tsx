@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Dropdown, Avatar, Button, Modal } from 'antd';
+import { Layout, Menu, Dropdown, Avatar, Button, Modal, Drawer } from 'antd';
 import { connect } from 'dva';
 import { UserOutlined, LogoutOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import NavLink from 'umi/navlink';
 import withRouter from 'umi/withRouter';
 import ReactAvatar from 'react-avatar';
 import UserDrawer from './UserDrawer';
-import Login from '@/components/Login';
+import Search from '@/components/Search';
 import styles from './index.less';
 
 const logo = 'https://fastools.oss-cn-hangzhou.aliyuncs.com/images/logo.svg';
@@ -39,12 +39,12 @@ const navs = [
 ];
 
 export default withRouter(
-  connect(({ global, login }: any) => ({ ...global, login }))(({ login, innerWidth, dispatch }: any) => {
-    const [visibeDrawer, setVisibeDrawer] = useState(false);
+  connect(({ global, login }: any) => ({ innerWidth: global.innerWidth, login }))(({ login, innerWidth, dispatch }: any) => {
+    const [visibleDrawer, setVisibleDrawer] = useState(false);
 
     function handelSelectMenuClick({ key }: any) {
       if (key === 'center') {
-        setVisibeDrawer(true);
+        setVisibleDrawer(true);
       }
     }
 
@@ -57,13 +57,19 @@ export default withRouter(
 
     function handleNavbarClick(e: any) {
       dispatch({
-        type: 'tool/queryTools',
-        payload: {
-          page: 1,
-          per_page: 10,
-          tool_type: e.key.replace('/', ''),
-        },
+        type: 'global/changeClickNavbar',
+        payload: true,
       });
+      if (e.key !== '/')
+        dispatch({
+          type: 'tool/queryTools',
+          payload: {
+            page: 1,
+            per_page: 9,
+            tool_type: e.key.replace('/', ''),
+            loadMore: false,
+          },
+        });
     }
 
     function logout() {
@@ -72,6 +78,7 @@ export default withRouter(
         icon: <ExclamationCircleOutlined />,
         cancelText: '取消',
         okText: '确认',
+        maskClosable: true,
         onOk() {
           dispatch({
             type: 'login/logout',
@@ -96,7 +103,10 @@ export default withRouter(
 
     return (
       <>
-        <Layout.Header className={styles.header} style={{ width: '100%' }}>
+        <Layout.Header
+          className={styles.header}
+          style={{ position: location.pathname.slice(0, -1).split('/').length === 3 ? 'static' : undefined }}
+        >
           <div className={styles.logo}>
             <NavLink to={navs[0].link}>
               <img src={innerWidth > 480 ? logoLarge : logo} alt="" />
@@ -112,10 +122,13 @@ export default withRouter(
           >
             {navs.map(item => (
               <Menu.Item key={item.link}>
-                <NavLink to={item.link}>{item.title}</NavLink>
+                <NavLink to={item.link} title={item.title} aria-label={item.title}>
+                  {item.title}
+                </NavLink>
               </Menu.Item>
             ))}
           </Menu>
+          {innerWidth >= 768 && location.pathname !== '/' && <Search full={false} />}
           <div className={styles.login}>
             {login.token ? (
               <Dropdown overlay={menuHeaderDropdown}>
@@ -135,8 +148,18 @@ export default withRouter(
             )}
           </div>
         </Layout.Header>
-        <UserDrawer onCloseDrawer={() => setVisibeDrawer(false)} visible={visibeDrawer} />
-        <Login />
+        <Drawer
+          title="个人中心"
+          placement="right"
+          onClose={() => setVisibleDrawer(false)}
+          width={360}
+          visible={visibleDrawer}
+          closable
+          destroyOnClose
+          zIndex={1100}
+        >
+          <UserDrawer />
+        </Drawer>
       </>
     );
   }),

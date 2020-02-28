@@ -1,3 +1,5 @@
+import { NavNameMap } from '@/components/ToolList';
+
 export default {
   namespace: 'global',
 
@@ -6,10 +8,25 @@ export default {
     payPaneVisible: false,
     innerWidth: window.innerWidth,
     loggingin: false,
-    breadcrumbName: 'zip',
+    breadcrumbName: '',
+    isClickNavbar: false,
   },
 
-  subscriptions: {},
+  subscriptions: {
+    history({ history }: any) {
+      history.listen((location: Location) => {
+        const name: any = location.pathname.slice(1);
+        let title = '';
+
+        if (name === 'login') title = '登录-快用工具-好快又好用-在线工具';
+        else if (NavNameMap[name]) title = `${NavNameMap[name]}-快用工具-好快又好用-在线工具`;
+        else title = '快用工具-好快又好用-在线工具';
+        document.title = title;
+
+        window.scrollTo(0, 0);
+      });
+    },
+  },
 
   effects: {},
 
@@ -46,6 +63,13 @@ export default {
       return {
         ...state,
         breadcrumbName: payload,
+      };
+    },
+
+    changeClickNavbar(state: any, { payload }: any) {
+      return {
+        ...state,
+        isClickNavbar: payload,
       };
     },
   },

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Layout, BackTop, Breadcrumb, Spin, Modal } from 'antd';
+import React, { useEffect } from 'react';
+import { Layout, BackTop, Breadcrumb, Spin, Modal, notification } from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import withRouter from 'umi/withRouter';
@@ -7,7 +7,36 @@ import GlobalFooter from '@/components/GlobalFooter';
 import GlobalHeader from '@/components/GlobalHeader';
 import Feedback from '@/components/Feedback';
 import Pay from '@/components/Pay';
+import Login from '@/components/Login';
 import styles from './index.less';
+
+if (!/Chrome|Firefox/g.test(window.navigator.userAgent))
+  notification.warning({
+    message: `温馨提示`,
+    description: (
+      <p>
+        请使用最新版
+        <a href="https://www.google.cn/intl/zh-CN/chrome/" target="_blank">
+          谷歌
+        </a>
+        、
+        <a href="http://www.firefox.com.cn/" target="_blank">
+          火狐
+        </a>
+        、
+        <a href="https://browser.qq.com/" target="_blank">
+          QQ
+        </a>
+        、
+        <a href="https://browser.360.cn/ee/" target="_blank">
+          360
+        </a>
+        &nbsp; 浏览器
+      </p>
+    ),
+    placement: 'topLeft',
+    duration: null,
+  });
 
 export default withRouter(
   connect(({ global, login }: any) => ({ ...global, login }))((props: any) => {
@@ -20,6 +49,13 @@ export default withRouter(
       '/video': '视频',
       '/other': '其他',
     };
+
+    useEffect(() => {
+      const skeleton: any = document.querySelector('.skeleton');
+      const root: any = document.querySelector('#root');
+      skeleton.style.display = 'none';
+      root.style.display = 'block';
+    });
 
     const extraBreadcrumbItems = pathSnippets.map((_: any, index: any) => {
       const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
@@ -48,9 +84,16 @@ export default withRouter(
     return (
       <Spin spinning={loggingin} tip="QQ登录中，请稍后..." size="large">
         <Layout className={styles.layout}>
+          <GlobalHeader />
+          <Layout.Content
+            className={styles.content}
+            style={{ paddingTop: location.pathname.slice(0, -1).split('/').length === 3 ? 36 : undefined }}
+          >
+            {!/(exception)|(^\/$)/.test(location.pathname) && <Breadcrumb className={styles.breadcrumb}>{breadcrumbItems}</Breadcrumb>}
+            <div>{props.children}</div>
+          </Layout.Content>
           <BackTop className={styles.backtop} />
           <Feedback />
-          <GlobalHeader />
           <Modal
             title="VIP升级"
             visible={payPaneVisible}
@@ -63,10 +106,7 @@ export default withRouter(
           >
             <Pay />
           </Modal>
-          <Layout.Content className={styles.content}>
-            <Breadcrumb className={styles.breadcrumb}>{!/(exception)|(^\/$)/.test(location.pathname) && breadcrumbItems}</Breadcrumb>
-            <div>{props.children}</div>
-          </Layout.Content>
+          <Login />
           <GlobalFooter />
         </Layout>
       </Spin>

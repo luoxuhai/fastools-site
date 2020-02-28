@@ -2,11 +2,14 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/x-icon" href="<%= context.publicPath %>favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge, chrome=1">
+  <meta name="renderer" content="webkit">
   <meta name="keywords" content="在线工具,自媒体工具,办公辅助工具,图片视频工具,文档工具,音频工具">
   <meta name="description" content="fastools.cn 提供便捷、强大、快速、易用的文档、图片、音频、视频等在线工具，网友无需注册和下载安装即可使用即可免费使用各种各样优秀的在线工具。">
+  <meta name="theme-color" content="#4fc08d">
+  <meta name="360-site-verification" content="efec9ca9c0c2bf49b8f54f8ea4626ea8">
+  <meta name="baidu-site-verification" content="6h4OshN9qD" />
   <meta name="author" content="fastools.cn">
   <meta property="og:title" content="快用工具网">
   <meta property="og:site_name" content="fastools">
@@ -15,11 +18,116 @@
   <meta property="og:image" content="https://www.fastools.cn/favicon.png">
   <meta property="og:url" content="https://www.fastools.cn/">
   <link rel="canonical" href="https://www.fastools.cn/">
-  <title><%= context.title %> - 好快又好用</title>
+  <link rel="icon" type="image/png" href="<%= context.publicPath %>favicon.png" />
   <script defer src="https://ito.oss-cn-beijing.aliyuncs.com/web-design-competition/qc-1.0.1.js" 
   data-appid="101816819" charset="utf-8"></script>
+  <title><%= context.title %> - 好快又好用</title>
+  <style>
+    .skeleton {
+  width: 100vw;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.spinner {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.double-bounce1,
+.double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #4fc08d;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  -webkit-animation: sk-bounce 2s infinite ease-in-out;
+  animation: sk-bounce 2s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1s;
+  animation-delay: -1s;
+}
+
+@-webkit-keyframes sk-bounce {
+  0%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  50% {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes sk-bounce {
+  0%,
+  100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+@keyframes toplight-frame {
+  0% {
+    transform: skew(-20deg) translateX(-70px);
+  }
+
+  100% {
+    transform: skew(-20deg) translateX(70px);
+  }
+}
+
+.skeleton-wrapper {
+  width: 100vw;
+  height: 100vh;
+}
+  </style>
 </head>
-<body id="root">
+<body>
   <noscript>You need to enable JavaScript to run this app!</noscript>
+  <div id="root"></div>
+  <div class="skeleton">
+    <div class="spinner">
+      <div class="double-bounce1"></div>
+      <div class="double-bounce2"></div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+      //Find the last canonical URL
+      if(x.length > 0){
+        for (i=0;i<x.length;i++){
+          if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+            canonicalURL=x[i].href;
+          }
+        }
+      }
+      //Get protocol
+        if (!canonicalURL){
+          curProtocol = window.location.protocol.split(':')[0];
+        }
+        else{
+          curProtocol = canonicalURL.split(':')[0];
+        }
+        //Get current URL if the canonical URL does not exist
+        if (!canonicalURL) canonicalURL = window.location.href;
+        //Assign script content. Replace current URL with the canonical URL
+        !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
 </body>
 </html>

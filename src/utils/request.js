@@ -40,7 +40,7 @@ const errorHandler = error => {
     router.replace('/exception/403');
   }
   if (status <= 504 && status >= 500) {
-    router.replace('/exception/500');
+    router.push('/exception/500');
   }
   if (status >= 404 && status < 422) {
     router.replace('/exception/404');
@@ -51,9 +51,11 @@ const errorHandler = error => {
  * 配置request请求时的默认参数
  */
 
+export const prefix = process.env.NODE_ENV === 'production' ? 'https://api.test.fastools.cn' : 'http://127.0.0.1:8099';
+
 const request = extend({
   maxCache: 100,
-  prefix: process.env.NODE_ENV === 'production' ? 'https://api.fastools.cn' : 'http://127.0.0.1:8099', // http://testluo.xiaomy.net
+  prefix, // http://testluo.xiaomy.net
   errorHandler,
 });
 

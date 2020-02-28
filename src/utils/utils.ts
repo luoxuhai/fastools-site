@@ -14,6 +14,7 @@ export function setTimeoutSync(time: number) {
 }
 
 export function getCountDown(time: number, success: Function) {
+  success(time--);
   const interval = setInterval(() => {
     if (time >= 0) {
       success(time--);
@@ -75,5 +76,74 @@ export function draw(show_num: any[]) {
     context.moveTo(x, y);
     context.lineTo(x + 1, y + 1);
     context.stroke();
+  }
+}
+
+export function monitorConsole(onOpen: Function, onClose: Function) {
+  let ConsoleManager = {
+    init() {
+      let x = document.createElement('div');
+      let isOpening = false,
+        isOpened = false;
+      Object.defineProperty(x, 'id', {
+        get() {
+          if (!isOpening) {
+            onOpen();
+            isOpening = true;
+          }
+          isOpened = true;
+        },
+      });
+      setInterval(function() {
+        isOpened = false;
+        console.info(x);
+        console.clear();
+        if (!isOpened && isOpening) {
+          onClose();
+          isOpening = false;
+        }
+      }, 200);
+    },
+  };
+
+  return ConsoleManager;
+}
+
+export const supportCSS3 = (function() {
+  const div = document.createElement('div');
+  return function(prop: any) {
+    if (prop in div.style) return true;
+    return false;
+  };
+})();
+
+// 禁止React Developer Tools
+export function disableReactDevTools() {
+  const noop = () => undefined;
+  const DEV_TOOLS = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+  if (typeof DEV_TOOLS === 'object') {
+    for (const [key, value] of Object.entries(DEV_TOOLS)) {
+      DEV_TOOLS[key] = typeof value === 'function' ? noop : null;
+    }
+  }
+}
+
+export function exitFullscreen(element: any) {
+  const exitMethod = element.exitFullscreen || element.webkitExitFullscreen || element.mozExitFullscreen || element.msExitFullscreen;
+  try {
+    exitMethod.call(element);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export function requestFullScreen(element: any) {
+  const requestMethod =
+    element.requestFullscreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+  try {
+    requestMethod.call(element);
+  } catch (error) {
+    console.error(error);
   }
 }

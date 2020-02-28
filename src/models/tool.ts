@@ -7,26 +7,42 @@ export default {
 
   state: {
     tools: [],
+    currentPage: 0,
+    totalPage: 1,
+    loading: false,
   },
 
   subscriptions: {},
 
   effects: {
-    *queryTools({ payload }: any, { call, put }: any) {
+    *queryTools({ payload: { page, per_page, tool_type, loadMore } }: any, { select, put }: any) {
       yield put({
-        type: 'setTools',
-        payload: [],
+        type: 'changeLoading',
+        payload: true,
       });
 
-      const result = yield queryTools(payload);
+      if (!loadMore)
+        yield put({
+          type: 'setTools',
+          payload: { tools: [] },
+        });
 
-      if (!result.length) {
+      const result = yield queryTools({ page, per_page, tool_type });
+
+      if (!result.total) {
         return;
       }
+
+      const tools = yield select((state: any) => state.tool.tools);
+      result.tools = [...tools, ...result.tools];
 
       yield put({
         type: 'setTools',
         payload: result,
+      });
+      yield put({
+        type: 'changeLoading',
+        payload: false,
       });
     },
   },
@@ -35,7 +51,16 @@ export default {
     setTools(state: any, { payload }: any) {
       return {
         ...state,
-        tools: payload,
+        tools: payload.tools,
+        currentPage: payload?.page,
+        totalPage: payload?.total,
+      };
+    },
+
+    changeLoading(state: any, { payload }: any) {
+      return {
+        ...state,
+        loading: payload,
       };
     },
   },

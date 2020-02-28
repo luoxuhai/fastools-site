@@ -1,5 +1,5 @@
 import localforage from 'localforage';
-import { queryUser } from '@/services/user';
+import { supportCSS3, disableReactDevTools } from '@/utils/utils';
 
 window.addEventListener('resize', e => {
   window.g_app._store.dispatch({
@@ -15,14 +15,15 @@ localforage.iterate((value: any, key: string) => {
       payload: value,
     });
 
-    queryUser().then(res => {
-      window.g_app._store.dispatch({
-        type: 'login/setUserInfo',
-        payload: {
-          user: res,
-          token: value.token,
-        },
-      });
+    window.g_app._store.dispatch({
+      type: 'login/queryUserInfo',
     });
   }
 });
+
+window.supportCSS3 = supportCSS3;
+
+if (process.env.NODE_ENV === 'production') {
+  disableReactDevTools();
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = false;
+}

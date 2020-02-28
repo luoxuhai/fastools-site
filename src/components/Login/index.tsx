@@ -10,17 +10,17 @@ import { queryVerificationCode, login } from '@/services/user';
 const QQIcon = 'https://fastools.oss-cn-hangzhou.aliyuncs.com/images/QQ.svg';
 
 let tel = '';
-let loading = false;
 
-export default connect(({ global, login }: any) => ({ ...global, ...login }))(({ loginPaneVisible, user, dispatch }: any) => {
+export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPaneVisible }))(({ loginPaneVisible, dispatch }: any) => {
   const [validateStatusTel, setValidateStatusTel]: any[] = useState(undefined);
   const [helpTextTel, setHelpTextTel]: any[] = useState(undefined);
   const [validateStatusCode, setValidateStatusCode]: any[] = useState(undefined);
   const [helpTextCode, setHelpTextCode]: any[] = useState(undefined);
   const [visible, setVisible]: any[] = useState(false);
   const [buttonText, setButtonText]: any[] = useState('获取验证码');
-
-  React.useEffect(() => {}, []);
+  const [loadingCode, setLoadingCode]: any[] = useState(false);
+  const [loadingLogin, setLoadingLogin]: any[] = useState(false);
+  const [form] = Form.useForm();
 
   function onCancel() {
     dispatch({
@@ -30,7 +30,6 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
   }
 
   function getVerificationCode() {
-    if (loading) return;
     if (tel) {
       setVisible(true);
     } else {
@@ -47,23 +46,33 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
     setHelpTextCode(undefined);
   }
 
+  function destroy() {
+    setLoadingCode(false);
+    setButtonText('获取验证码');
+    form.setFieldsValue({
+      verificationCode: '',
+    });
+  }
+
   function handleOK() {
-    setTimeout(() => setVisible(false), 500);
+    setVisible(false);
 
     getCountDown(60, (time: number) => {
       if (time === 0) {
-        loading = false;
+        setLoadingCode(false);
         setButtonText('获取验证码');
       } else {
         setButtonText(time + '秒后重新获取');
-        loading = true;
+        setLoadingCode(true);
       }
     });
   }
 
   const onFinish = (values: any) => {
+    setLoadingLogin(true);
     login(values)
       .then(res => {
+        setLoadingLogin(false);
         if (res.token) {
           message.success({ content: '登录成功' });
           dispatch({
@@ -71,6 +80,7 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
             payload: res,
           });
           localforage.setItem('user', res);
+          destroy();
           onCancel();
         } else {
           setValidateStatusCode('error');
@@ -79,6 +89,9 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
       })
       .catch(error => {
         console.error(error);
+      })
+      .finally(() => {
+        setLoadingLogin(false);
       });
   };
 
@@ -139,12 +152,12 @@ export default connect(({ global, login }: any) => ({ ...global, ...login }))(({
             >
               <Input className={styles.verificationCodeInput} onChange={handleInputChange} placeholder="请输入验证码" maxLength={4} />
             </Form.Item>
-            <Button className={styles.verificationCodeBtn} onClick={getVerificationCode}>
+            <Button className={styles.verificationCodeBtn} onClick={getVerificationCode} disabled={loadingCode}>
               {buttonText}
             </Button>
           </div>
           <Form.Item>
-            <Button className={styles.button} block type="primary" htmlType="submit">
+            <Button className={styles.button} loading={loadingLogin} block type="primary" htmlType="submit">
               登录/注册
             </Button>
           </Form.Item>

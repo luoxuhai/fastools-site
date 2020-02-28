@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import localforage from 'localforage';
-import { login } from '@/services/user';
+import { login, queryUser } from '@/services/user';
 
 export default {
   namespace: 'login',
@@ -35,11 +35,22 @@ export default {
         type: 'clearUserInfo',
       });
     },
+
+    *queryUserInfo(_: any, { put }: any) {
+      const result = yield queryUser();
+
+      if (!result._id) return;
+
+      yield put({
+        type: 'setUserInfo',
+        payload: { user: result },
+      });
+    },
   },
 
   reducers: {
     setUserInfo(state: any, { payload }: any) {
-      localforage.setItem('user', payload);
+      localforage.setItem('user', { user: state.user, token: state.token, ...payload });
       return {
         ...state,
         ...payload,

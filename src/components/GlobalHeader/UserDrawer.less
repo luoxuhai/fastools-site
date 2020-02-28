@@ -1,27 +1,30 @@
-.drawer {
-  .user {
+@import '../../utils/utils.less';
+
+.user {
+  display: flex;
+  margin-bottom: 30px;
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+  .userInfo {
     display: flex;
-    margin-bottom: 30px;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 15px;
 
-    .avatar {
-      width: 60px;
-      height: 60px;
-    }
-
-    .userInfo {
+    .vipContainer {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      margin-left: 15px;
+      align-items: center;
 
-      .vipContainer {
-        display: flex;
-        align-items: center;
-
-        h4 {
-          margin-right: 20px;
-        }
+      h4 {
+        margin-right: 20px;
       }
     }
   }
+}
+
+.description {
+  .textOverflowMulti(2);
 }

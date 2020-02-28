@@ -48,6 +48,11 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
         if (res.isPay) {
           message.success({ content: '支付成功!' });
           getPayCode(currentIndex);
+          window.frames?.tool?.postMessage(res.user_type === 'vip', '*');
+          dispatch({
+            type: 'global/changePayPaneVisible',
+            payload: false,
+          });
           queryVipExpires().then(res => {
             if (res.vip_expires)
               dispatch({
@@ -88,7 +93,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
     <>
       <Row gutter={16}>
         {pays.map((item, index) => (
-          <Col span={6}>
+          <Col span={6} key={item.days}>
             <Card
               title={item.title}
               onClick={() => handlePayCard(index)}
