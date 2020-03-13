@@ -37,6 +37,11 @@ class ToolListPage extends Component {
     const { dispatch, match, currentPage }: any = this.props;
 
     dispatch({
+      type: 'changeLoading',
+      payload: true,
+    });
+
+    dispatch({
       type: 'tool/queryTools',
       payload: {
         page: currentPage + 1,

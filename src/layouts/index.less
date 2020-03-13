@@ -9,7 +9,7 @@
     padding-top: 100px;
 
     .breadcrumb {
-      margin-bottom: 30px;
+      margin: 0 5px 30px 5px;
     }
   }
 
@@ -23,17 +23,15 @@
     margin: 0;
   }
 
-  .backtop {
-    right: 43px;
+  .backtopContainer {
+    position: fixed;
+    right: 38px;
     bottom: 120px;
     width: 50px;
     height: 50px;
 
-    > div {
-      .center;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
+    @media (max-width: 480px) {
+      right: 20px;
     }
   }
 }

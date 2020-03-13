@@ -9,15 +9,15 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.0.0-alpha.19",
-    "antd": "^4.0.0-rc.5",
-    "crypto-js": "^4.0.0",
+    "@ant-design/icons": "^4.0.2",
+    "antd": "^4.0.0",
     "dva": "^2.6.0-beta.6",
     "localforage": "^1.7.3",
     "react": "^16.12.0",
     "react-avatar": "^3.9.1",
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.12.0",
+    "react-highlight-words": "^0.16.0",
     "umi-request": "^1.2.19"
   },
   "devDependencies": {
@@ -27,6 +27,7 @@
     "@types/react": "^16.7.18",
     "@types/react-copy-to-clipboard": "^4.3.0",
     "@types/react-dom": "^16.0.11",
+    "@types/react-highlight-words": "^0.16.1",
     "@types/react-test-renderer": "^16.0.3",
     "babel-eslint": "^9.0.0",
     "eslint": "^5.4.0",

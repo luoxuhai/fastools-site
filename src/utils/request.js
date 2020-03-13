@@ -4,6 +4,8 @@
  */
 import { extend } from 'umi-request';
 import router from 'umi/router';
+import { Button, notification } from 'antd';
+import localforage from 'localforage';
 // import cookie from 'react-cookies';
 
 const codeMessage = {
@@ -32,17 +34,33 @@ const errorHandler = error => {
   const errortext = codeMessage[response.status] || response.statusText;
   const { status } = response;
   console.error(errortext);
-  if (status === 401) {
-    /* eslint-disable no-underscore-dangle */
-  }
-  // environment should not be used
-  if (status === 403) {
+  if (status === 422) {
+    notification.warning({
+      message: '登录状态过期',
+      description: (
+        <Button
+          style={{ margin: '20px 0' }}
+          onClick={() => {
+            window.g_app._store.dispatch({
+              type: 'global/changeLoginPaneVisible',
+              payload: true,
+            });
+            notification.close('reLogin');
+          }}
+          type="primary"
+        >
+          重新登录
+        </Button>
+      ),
+      duration: 0,
+      key: 'reLogin',
+    });
+    window.g_app._store.dispatch({
+      type: 'login/logout',
+    });
+  } else if (status === 403) {
     router.replace('/exception/403');
-  }
-  if (status <= 504 && status >= 500) {
-    router.push('/exception/500');
-  }
-  if (status >= 404 && status < 422) {
+  } else if (status === 404) {
     router.replace('/exception/404');
   }
   return response;
@@ -51,17 +69,23 @@ const errorHandler = error => {
  * 配置request请求时的默认参数
  */
 
-export const prefix = process.env.NODE_ENV === 'production' ? 'https://api.test.fastools.cn' : 'http://127.0.0.1:8099';
+export const prefix = process.env.NODE_ENV === 'production' ? 'https://api.fastools.cn' : 'http://127.0.0.1:8099';
 
 const request = extend({
-  maxCache: 100,
+  maxCache: 200,
   prefix, // http://testluo.xiaomy.net
   errorHandler,
 });
 
 // request拦截器, 改变url 或 options.
-request.interceptors.request.use((url, options) => {
-  options.headers.Authorization = `Bearer ${window.g_app._store.getState().login.token}`;
+request.interceptors.request.use(async (url, options) => {
+  let token = window.g_app._store.getState().login.token;
+  if (!token) {
+    try {
+      token = (await localforage.getItem('user')).token;
+    } catch (error) {}
+  }
+  options.headers.Authorization = `Bearer ${token}`;
 
   return {
     url: `${url}`,

@@ -16,11 +16,6 @@ export default {
 
   effects: {
     *queryTools({ payload: { page, per_page, tool_type, loadMore } }: any, { select, put }: any) {
-      yield put({
-        type: 'changeLoading',
-        payload: true,
-      });
-
       if (!loadMore)
         yield put({
           type: 'setTools',

@@ -22,6 +22,8 @@ export function getCountDown(time: number, success: Function) {
       clearInterval(interval);
     }
   }, 1000);
+
+  return interval;
 }
 
 //得到随机的颜色值
@@ -94,7 +96,7 @@ export function monitorConsole(onOpen: Function, onClose: Function) {
           isOpened = true;
         },
       });
-      setInterval(function() {
+      return setInterval(function() {
         isOpened = false;
         console.info(x);
         console.clear();
@@ -146,4 +148,76 @@ export function requestFullScreen(element: any) {
   } catch (error) {
     console.error(error);
   }
+}
+
+export function pushUrl() {
+  // 百度
+  (function() {
+    !(function() {
+      var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,
+        r = window.location.href;
+      if (!e.test(r)) {
+        var n = '//api.share.baidu.com/s.gif?l=' + r;
+        var t = new Image();
+        t.src = n;
+      }
+    })(window);
+  })();
+
+  // 360
+  // (function() {
+  //   (function(e) {
+  //     function t(e) {
+  //       var t = location.href,
+  //         n = t.split('').reverse(),
+  //         r = e.split(''),
+  //         i = [];
+  //       for (var s = 0, o = 16; s < o; s++) i.push(r[s] + (n[s] || ''));
+  //       return i.join('');
+  //     }
+  //     var n = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.so\.com)/gi,
+  //       r = e.location.href;
+  //     if (r && !n.test(r) && window.navigator.appName) {
+  //       var i = '//s.360.cn/so/zz.gif',
+  //         s = document.getElementById('sozz'),
+  //         o = s.src.split('?')[1],
+  //         u = t(o),
+  //         a = new Image();
+  //       r && (i += '?url=' + encodeURIComponent(r)), o && (i += '&sid=' + o), u && (i += '&token=' + u), o && (a.src = i);
+  //     }
+  //   })(window);
+  // })();
+}
+
+/**
+ * 下载文件
+ * @param {String | Blob | File | ArrayBuffer} src 资源地址
+ * @param {String} fileName 文件名
+ */
+export function download(file: any, fileName: string) {
+  let src = null;
+  if (file instanceof Blob || file instanceof File) {
+    src = URL.createObjectURL(file);
+  } else if (file instanceof ArrayBuffer) {
+    src = URL.createObjectURL(new Blob([file]));
+  } else src = file;
+
+  const el = document.createElement('a');
+  el.href = src;
+  el.target = '_blank';
+  el.download = fileName;
+  el.style.display = 'none';
+  document.body.appendChild(el);
+  el.click();
+  document.body.removeChild(el);
+}
+
+export function postMessage(name: string, value: any) {
+  window.frames.tool?.postMessage(
+    {
+      name,
+      value,
+    },
+    '*',
+  );
 }

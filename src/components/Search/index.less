@@ -12,14 +12,21 @@
 
   @media (max-width: 480px) {
     width: 95%;
+    height: 40px;
     margin-bottom: 30px !important;
+    margin-top: 30px !important;
   }
 
   &__input {
     flex: 1;
+    height: 50px;
     margin: 0 10px;
     padding: 0;
     border: 0;
+
+    @media (max-width: 480px) {
+      height: 40px;
+    }
 
     &:focus {
       outline: none;
@@ -42,25 +49,43 @@
   }
 }
 
+.searchLine {
+  .search;
+  overflow: hidden;
+
+  @media (max-width: 1050px) {
+    width: 50%;
+  }
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+
 .searchPane {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: fixed;
-  z-index: 9999;
+  z-index: 1001;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  padding-top: 100px;
-  padding-bottom: 10px;
+  padding: 100px 10px 10px 0;
   background-color: rgba(0, 0, 0, 0.1);
   -webkit-backdrop-filter: blur(30px);
   backdrop-filter: blur(30px);
   overflow-y: auto;
 
   @media (max-width: 480px) {
-    padding-top: 45px;
+    padding: 20px 0 10px 0;
+  }
+
+  .highlight {
+    background-color: var(--antd-wave-shadow-color);
+    color: white;
+    border-radius: 2px;
   }
 
   .searchList {
@@ -82,6 +107,12 @@
       &:hover {
         background-color: #f5f5f5;
       }
+
+      .listItemIcon {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+      }
     }
   }
 
@@ -100,6 +131,7 @@
   font-weight: bold;
   font-size: 2em;
   letter-spacing: 0.1em;
+  margin-bottom: 0;
 
   span {
     font-size: 1.05em;
@@ -109,6 +141,8 @@
 
 .description {
   margin-top: 20px;
+  margin-bottom: 0;
+  padding: 0 10px;
   text-align: center;
   font-size: 1.3em;
   font-weight: 400;

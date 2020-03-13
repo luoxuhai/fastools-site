@@ -19,14 +19,29 @@ export default connect(({ global }: any) => ({ ...global }))(({ dispatch }: any)
     });
 
     if (window.QC.Login.check()) {
-      window.localStorage.setItem(
-        'access_token',
+      const access_token =
         location.hash
           .split('=')[1]
           .split('&')
-          .shift() || '',
-      );
+          .shift() || '';
+
+      if (!window.isMobile) window.localStorage.setItem('access_token', access_token);
+      dispatch({
+        type: 'login/login',
+        payload: {
+          access_token,
+        },
+      });
+
+      window.localStorage.removeItem('access_token');
     }
+
+    return () => {
+      dispatch({
+        type: 'global/changeLoggingin',
+        payload: false,
+      });
+    };
   }, []);
 
   return (

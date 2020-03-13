@@ -1,4 +1,6 @@
+import router from 'umi/router';
 import { NavNameMap } from '@/components/ToolList';
+import { pushUrl } from '@/utils/utils';
 
 export default {
   namespace: 'global',
@@ -15,20 +17,40 @@ export default {
   subscriptions: {
     history({ history }: any) {
       history.listen((location: Location) => {
+        window.scrollTo(0, 0);
         const name: any = location.pathname.slice(1);
-        let title = '';
+        let title = '快用工具 - 又快又好用的在线工具网';
 
-        if (name === 'login') title = '登录-快用工具-好快又好用-在线工具';
-        else if (NavNameMap[name]) title = `${NavNameMap[name]}-快用工具-好快又好用-在线工具`;
-        else title = '快用工具-好快又好用-在线工具';
+        if (location.pathname.slice(1).split('/').length >= 3) {
+          router.replace('/exception/404');
+          return;
+        }
+
+        if (name === 'login') title = '登录 - 快用工具 - 又快又好用的在线工具网';
+        if (NavNameMap[name]) title = `${NavNameMap[name]} - 快用工具 - 又快又好用的在线工具网`;
         document.title = title;
 
-        window.scrollTo(0, 0);
+        window.g_app._store.dispatch({
+          type: 'global/changeClickNavbar',
+          payload: true,
+        });
+
+        if (NavNameMap[name])
+          window.g_app._store.dispatch({
+            type: 'tool/queryTools',
+            payload: {
+              page: 1,
+              per_page: 9,
+              tool_type: name,
+              loadMore: false,
+            },
+          });
+        try {
+          pushUrl();
+        } catch (error) {}
       });
     },
   },
-
-  effects: {},
 
   reducers: {
     changeLoginPaneVisible(state: any, { payload }: any) {

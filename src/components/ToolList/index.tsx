@@ -22,7 +22,7 @@ export const ToolList = ({ tools, title }: any) => {
         <div onClick={e => handleToDetail(item, e)}>
           <Card.Grid className={styles.cardItem} key={item._id}>
             <header className={styles.header}>
-              <Avatar src={item.cover} size="large" />
+              <img className={styles.cover} src={item.cover} alt={item.title} />
               <h2 className={styles.title}>
                 <Link to={`/${item.tool_type}/${item.alias}`} title={item.title} aria-label={item.title} target="_blank">
                   {item.title}

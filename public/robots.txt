@@ -1,2 +1,4 @@
 User-Agent: *
-Disallow: /
+Disallow: /*.js$
+Disallow: /*.css$
+Sitemap: https://www.fastools.cn/sitemap.xml

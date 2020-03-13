@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { List, Avatar } from 'antd';
+import { List, Tooltip, Empty } from 'antd';
 import { SearchOutlined, EnterOutlined, LoadingOutlined, CloseCircleFilled } from '@ant-design/icons';
 import Link from 'umi/link';
+import dynamic from 'umi/dynamic';
+import _Highlighter from 'react-highlight-words';
 import { searchTool } from '@/services/tool';
 import styles from './index.less';
 
-const rootEl: any = document.getElementById('root');
+const bodyEl: any = document.querySelector('body');
 
 const fullStyle = {
   height: 50,
@@ -23,14 +25,27 @@ const lineStyle = {
 
 let inputValue = '';
 
+const delay = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
+
+const Highlighter: any = dynamic({
+  loader: async function() {
+    await delay(100);
+    return ({ title }: { title: string }) => (
+      <_Highlighter highlightClassName={styles.highlight} searchWords={inputValue.split('')} autoEscape={true} textToHighlight={title} />
+    );
+  },
+});
+
 function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX.Element {
   return (
     <div className={styles.searchPane} style={window.supportCSS3('backdrop-filter') ? {} : { backgroundColor: '#e3e3e3' }}>
-      <CloseCircleFilled className={styles.close} onClick={onClose} title="关闭" />
+      <Tooltip className={styles.close} title="关闭" placement="left">
+        <CloseCircleFilled onClick={onClose} />
+      </Tooltip>
       <h1 className={styles.slogan}>
-        好<span>快</span>又好<span>用</span>！
+        又<span>快</span>又好<span>用</span>！
       </h1>
-      <h3 className={styles.description}>Fastools.cn 快用工具网提供各种优质,快捷,易用的在线工具，无需下载安装即可使用。</h3>
+      <h2 className={styles.description}>Fastools.cn 快用工具网提供各种优质、快捷、易用的在线工具，无需下载安装即可使用。</h2>
       <div className={styles.search} style={{ ...fullStyle, marginBottom: 20 }}>
         <SearchOutlined className={styles.search__iconsearch} />
         <input
@@ -46,10 +61,12 @@ function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX
         {loading ? (
           <LoadingOutlined className={styles.search__iconenter} />
         ) : (
-          <EnterOutlined className={styles.search__iconenter} onClick={onSearch} title="搜索" />
+          <Tooltip title="搜索" placement="top">
+            <EnterOutlined className={styles.search__iconenter} onClick={onSearch} />
+          </Tooltip>
         )}
       </div>
-      {tools.length > 0 && (
+      {tools.length > 0 ? (
         <List
           className={styles.searchList}
           itemLayout="horizontal"
@@ -57,11 +74,17 @@ function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX
           renderItem={(item: any) => (
             <Link to={`/${item.tool_type}/${item.alias}`} target="_blank" title={item.title}>
               <List.Item className={styles.listItem}>
-                <List.Item.Meta avatar={<Avatar src={item.cover} />} title={item.title} description={item.desc + '...'} />
+                <List.Item.Meta
+                  avatar={<img className={styles.listItemIcon} src={item.cover} alt={item.title} />}
+                  title={<Highlighter title={item.title} />}
+                  description={item.desc + '...'}
+                />
               </List.Item>
             </Link>
           )}
         />
+      ) : (
+        <Empty description="暂无数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
       )}
     </div>
   );
@@ -69,23 +92,23 @@ function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX
 
 export default ({ full = true }: any) => {
   const [visible, setVisible] = useState(false);
-  const [tools, setTools] = useState([]);
+  const [tools, setTools]: any[] = useState([]);
   const [loading, setLoading] = useState(false);
 
   function handleVisible() {
     setVisible(true);
-    rootEl.style.overflow = 'hidden';
+    bodyEl.style.overflow = 'hidden';
   }
 
   function handleClose() {
     setVisible(false);
-    rootEl.style.overflow = 'auto';
+    bodyEl.style.overflow = 'auto';
   }
 
   function handleSearch() {
     setLoading(true);
     searchTool(inputValue).then(res => {
-      if (res?.length) setTools(res);
+      if (res instanceof Array) setTools(res);
       setLoading(false);
     });
   }
@@ -99,18 +122,18 @@ export default ({ full = true }: any) => {
       {full && (
         <>
           <h1 className={styles.slogan}>
-            好<span>快</span>又好<span>用</span>！
+            又<span>快</span>又好<span>用</span>！
           </h1>
-          <h3 className={styles.description}>Fastools.cn 快用工具网提供各种优质,快捷,易用的在线工具，无需下载安装即可使用。</h3>
+          <h2 className={styles.description}>Fastools.cn 快用工具网提供各种优质、快捷、易用的在线工具，无需下载安装即可使用。</h2>
         </>
       )}
-      <div className={styles.search} onClick={handleVisible} style={full ? fullStyle : lineStyle}>
-        <SearchOutlined className={styles.search__iconsearch} />
+      <div className={full ? styles.search : styles.searchLine} onClick={handleVisible} style={full ? fullStyle : lineStyle}>
+        <SearchOutlined className={styles.search__iconsearch} style={{ fontSize: full ? 24 : 18 }} />
         <input
           className={styles.search__input}
           onFocus={handleVisible}
           placeholder="搜索"
-          style={{ height: 'inherit', backgroundColor: 'inherit' }}
+          style={{ height: full ? '' : 36, backgroundColor: 'inherit' }}
         />
         {full && <EnterOutlined className={styles.search__iconenter} />}
       </div>

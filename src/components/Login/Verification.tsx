@@ -34,7 +34,7 @@ export default function Verification({ visible, onOk, onCancel, onVerificationCo
   }
 
   return (
-    <Modal title="验证码" visible={visible} onOk={handleOK} onCancel={onCancel} width={280} cancelText="取消" okText="确认">
+    <Modal title="验证码" visible={visible} onOk={handleOK} onCancel={onCancel} width={280} zIndex={1003} cancelText="取消" okText="确认">
       <div className={styles.container}>
         <div className={styles.canvasContainer}>
           <canvas className={styles.canvas} id="canvas" width="100" height="30"></canvas>

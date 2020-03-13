@@ -3,7 +3,6 @@ import { IConfig } from 'umi-types';
 // ref: https://umijs.org/config/
 const config: IConfig = {
   treeShaking: true,
-  devtool: false,
   theme: {
     'primary-color': '#4fc08d',
   },
@@ -13,10 +12,11 @@ const config: IConfig = {
       component: '../layouts/index',
       routes: [
         { path: '/', component: '../pages/index' },
+        { path: '404', component: '../pages/404' },
         { path: 'login', component: '../pages/Login/index' },
         { path: ':id', component: '../pages/ToolList/index' },
         { path: 'exception/403', component: '../pages/Exception/403' },
-        { path: 'exception/404', component: '../pages/Exception/404' },
+        { path: 'exception/404', component: '../pages/404' },
         { path: 'exception/500', component: '../pages/Exception/500' },
         { path: ':id/:id', component: '../pages/ToolDetail/index' },
       ],
@@ -31,12 +31,13 @@ const config: IConfig = {
         dva: true,
         dynamicImport: { webpackChunkName: true },
         title: '快用工具',
-        dll: false,
         fastClick: true,
+        dll: true,
         pwa: {
           manifestOptions: {
             srcPath: 'src/manifest.json',
           },
+          // workboxPluginMode: 'InjectManifest',
           workboxOptions: {
             importWorkboxFrom: 'local',
           },

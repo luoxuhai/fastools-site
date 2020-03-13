@@ -12,4 +12,5 @@ interface Window {
   canvas: Element;
   supportCSS3: Function;
   tool: any;
+  isMobile: boolean;
 }

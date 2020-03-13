@@ -5,29 +5,30 @@ import { connect } from 'dva';
 import styles from './index.less';
 import { queryPayCode, queryPayInfo } from '@/services/pay';
 import { queryVipExpires } from '@/services/user';
+import { download, postMessage } from '@/utils/utils';
 
 const pays = [
   {
     title: '包年',
-    tip: '12个月(365天)',
+    tip: '12个月(365天) - 享全站工具',
     value: 49.99,
     days: 365,
   },
   {
     title: '包半年',
-    tip: '6个月(180天)',
+    tip: '6个月(180天) - 享全站工具',
     value: 29.99,
     days: 180,
   },
   {
     title: '包季',
-    tip: '3个月(90天)',
+    tip: '3个月(90天) - 享全站工具',
     value: 19.99,
     days: 90,
   },
   {
     title: '包月',
-    tip: '1个月(30天)',
+    tip: '1个月(30天) - 享全站工具',
     value: 9.99,
     days: 30,
   },
@@ -35,6 +36,7 @@ const pays = [
 
 let order: string;
 let interval: any;
+let paySuccess = false;
 
 export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispatch }: any) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,13 +44,16 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
   const [spinning, setSpinning] = useState(true);
 
   useEffect(() => {
+    paySuccess = false;
     getPayCode(currentIndex);
     interval = setInterval(() => {
       queryPayInfo(order).then(res => {
         if (res.isPay) {
+          if (paySuccess) return;
+          paySuccess = true;
           message.success({ content: '支付成功!' });
           getPayCode(currentIndex);
-          window.frames?.tool?.postMessage(res.user_type === 'vip', '*');
+          postMessage('auth', true)
           dispatch({
             type: 'global/changePayPaneVisible',
             payload: false,
@@ -89,12 +94,17 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
     getPayCode(index);
   }
 
+  function handleDownloadQRcode(src: string) {
+    download(src, '微信扫码支付');
+  }
+
   return (
     <>
       <Row gutter={16}>
         {pays.map((item, index) => (
-          <Col span={6} key={item.days}>
+          <Col span={6} xs={12} sm={8} lg={6} key={item.days}>
             <Card
+              className={styles.cardItem}
               title={item.title}
               onClick={() => handlePayCard(index)}
               style={{ backgroundImage: currentIndex === index ? 'linear-gradient(120deg,#fff7ec,#ffcb7e)' : '' }}
@@ -115,15 +125,20 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
         <h3 className={styles.payTitle}>扫码支付</h3>
         <div className={styles.QRcodePay}>
           <Spin spinning={spinning}>
-            <div className={styles.QRcodePayImg} style={{ backgroundImage: `url(${payCode})` }}></div>
+            <div
+              className={styles.QRcodePayImg}
+              onMouseDown={() => handleDownloadQRcode(payCode)}
+              onTouchStart={() => handleDownloadQRcode(payCode)}
+              style={{ backgroundImage: `url(${payCode})` }}
+            ></div>
           </Spin>
           <div className={styles.payInfo}>
             <p className={styles.money}>{pays[currentIndex].value}￥</p>
             <p>支持使用微信扫码支付</p>
             <p>
               客服QQ群:
-              <a href="http://shang.qq.com/wpa/qunwpa?idkey=<idkey>" target="_blank">
-                1558884454
+              <a href="//shang.qq.com/wpa/qunwpa?idkey=a8b4e205ac4b58351e1b8acdf672be7ee82f724d627429704279ca78596775ff" target="_blank">
+                617853966
               </a>
             </p>
           </div>

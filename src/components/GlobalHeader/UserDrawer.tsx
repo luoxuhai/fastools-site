@@ -76,14 +76,18 @@ export default connect(({ login }: any) => ({ user: login.user }))(({ user, disp
                   <List.Item>
                     <List.Item.Meta
                       avatar={<Avatar src={item.cover} />}
-                      title={<a href={`/${item.tool_type}/${item.alias}`} target="_blank">{item.title}</a>}
+                      title={
+                        <a href={`/${item.tool_type}/${item.alias}`} target="_blank">
+                          {item.title}
+                        </a>
+                      }
                       description={<p className={styles.description}>{item.desc}</p>}
                     />
                   </List.Item>
                 )}
               />
             ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty description="暂无数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
             )}
           </Tabs.TabPane>
         ))}

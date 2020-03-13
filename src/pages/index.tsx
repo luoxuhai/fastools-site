@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import { ToolList } from '@/components/ToolList';
 import Search from '@/components/Search';
 import styles from './index.less';
-import { queryTools } from '@/services/tool';
+import { queryTools, EToolType } from '@/services/tool';
 
 @connect(({ tool }) => ({
   tools: tool.tools,
@@ -17,7 +17,7 @@ class Home extends Component {
   };
 
   componentDidMount() {
-    queryTools({ tool_type: 'recommend' }).then((res: any) => {
+    queryTools({ tool_type: EToolType.recommend }).then((res: any) => {
       this.setState({
         recommend: res.tools,
       });
@@ -36,6 +36,11 @@ class Home extends Component {
 
   handleLoadMore = () => {
     const { dispatch, currentPage }: any = this.props;
+
+    dispatch({
+      type: 'changeLoading',
+      payload: true,
+    });
 
     dispatch({
       type: 'tool/queryTools',

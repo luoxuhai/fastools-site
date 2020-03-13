@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Input, message } from 'antd';
+import { Modal, Button, Form, Input, Tooltip, message } from 'antd';
 import { connect } from 'dva';
 import localforage from 'localforage';
 import Verification from './Verification';
@@ -7,9 +7,10 @@ import { getCountDown } from '@/utils/utils';
 import styles from './index.less';
 import { queryVerificationCode, login } from '@/services/user';
 
-const QQIcon = 'https://fastools.oss-cn-hangzhou.aliyuncs.com/images/QQ.svg';
+const QQIcon = 'https://static.fastools.cn/images/QQ.svg';
 
 let tel = '';
+let codeInterval: any;
 
 export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPaneVisible }))(({ loginPaneVisible, dispatch }: any) => {
   const [validateStatusTel, setValidateStatusTel]: any[] = useState(undefined);
@@ -44,20 +45,30 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
     setHelpTextTel(undefined);
     setValidateStatusCode(undefined);
     setHelpTextCode(undefined);
+    stopLoadingCode();
+  }
+
+  function stopLoadingCode() {
+    clearInterval(codeInterval);
+    setLoadingCode(false);
+    setButtonText('获取验证码');
   }
 
   function destroy() {
-    setLoadingCode(false);
-    setButtonText('获取验证码');
+    stopLoadingCode();
     form.setFieldsValue({
+      tel: '',
       verificationCode: '',
     });
+    tel = '';
+    setValidateStatusCode(false);
+    setValidateStatusTel(false);
   }
 
   function handleOK() {
     setVisible(false);
 
-    getCountDown(60, (time: number) => {
+    codeInterval = getCountDown(120, (time: number) => {
       if (time === 0) {
         setLoadingCode(false);
         setButtonText('获取验证码');
@@ -65,6 +76,13 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
         setButtonText(time + '秒后重新获取');
         setLoadingCode(true);
       }
+    });
+  }
+
+  function visiblePayPane() {
+    dispatch({
+      type: 'global/changePayPaneVisible',
+      payload: true,
     });
   }
 
@@ -82,6 +100,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
           localforage.setItem('user', res);
           destroy();
           onCancel();
+          visiblePayPane();
         } else {
           setValidateStatusCode('error');
           setHelpTextCode('验证码错误!');
@@ -97,21 +116,24 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
 
   function QQlogin() {
     window.loginWin = window.QC.Login.showPopup({
-      appId: '101816819',
+      appId: '101854393',
       redirectURI: location.origin + '/login',
     });
-    window.addEventListener('storage', e => {
-      if (e.key === 'access_token' && e.newValue) {
-        dispatch({
-          type: 'login/login',
-          payload: {
-            access_token: e.newValue,
-          },
-        });
-        window.localStorage.removeItem('access_token');
-        onCancel();
-      }
-    });
+    if (window.isMobile) localStorage.setItem('loginPath', location.pathname);
+    else
+      window.addEventListener('storage', e => {
+        if (e.key === 'access_token' && e.newValue) {
+          dispatch({
+            type: 'login/login',
+            payload: {
+              access_token: e.newValue,
+            },
+          });
+          window.localStorage.removeItem('access_token');
+          onCancel();
+          visiblePayPane();
+        }
+      });
   }
 
   return (
@@ -123,9 +145,10 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
         maskClosable={false}
         title="登录/注册"
         width={400}
+        zIndex={1002}
         footer={null}
       >
-        <Form onFinish={onFinish}>
+        <Form onFinish={onFinish} form={form}>
           <Form.Item
             name="tel"
             validateStatus={validateStatusTel}
@@ -150,7 +173,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
               hasFeedback
               rules={[{ required: true, whitespace: true, message: '验证码错误!' }]}
             >
-              <Input className={styles.verificationCodeInput} onChange={handleInputChange} placeholder="请输入验证码" maxLength={4} />
+              <Input className={styles.verificationCodeInput} placeholder="请输入验证码" maxLength={4} />
             </Form.Item>
             <Button className={styles.verificationCodeBtn} onClick={getVerificationCode} disabled={loadingCode}>
               {buttonText}
@@ -163,10 +186,12 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
           </Form.Item>
         </Form>
         <ul className={styles.othorLogin}>
-          <li onClick={QQlogin}>
-            <img src={QQIcon} alt="QQ登录" />
-            <h4>QQ登录</h4>
-          </li>
+          <Tooltip title="QQ登录" placement="top">
+            <li id="loginButton" onClick={QQlogin}>
+              <img src={QQIcon} alt="QQ登录" />
+              <h4>QQ登录</h4>
+            </li>
+          </Tooltip>
         </ul>
       </Modal>
       {visible && (

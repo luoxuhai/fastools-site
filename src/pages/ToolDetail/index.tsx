@@ -16,10 +16,13 @@ import Link from 'umi/link';
 // import padPkcs7 from 'crypto-js/pad-pkcs7';
 import { prefix } from '@/utils/request.js';
 import { queryTool, star } from '@/services/tool';
-import { queryVipExpires } from '@/services/user';
+import { queryVipExpires, IQueryVipExpires } from '@/services/user';
+import { openFeedback } from '@/components/Feedback';
+import PayModal from './components/PayModal';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { monitorConsole, requestFullScreen, exitFullscreen } from '@/utils/utils';
+import { monitorConsole, postMessage } from '@/utils/utils';
 import styles from './index.less';
+import tool from 'mock/tool';
 
 const buttons = [
   {
@@ -50,8 +53,29 @@ interface IState {
   similarity: any[];
   visibleHelp: boolean;
   visibleFrame: boolean;
+  visiblePayModal: boolean;
   loading: boolean;
-  iframeHeight: number | undefined;
+  visibleInput: boolean;
+  toolUrl: string;
+
+  iframeHeight: string | undefined;
+}
+
+function hasFree(cost: string): boolean {
+  if (cost === 'free') {
+    postMessage('auth', true);
+    return true;
+  } else return false;
+}
+
+function queryAccess(params?: IQueryVipExpires) {
+  queryVipExpires(params)
+    .then(res => {
+      postMessage('auth', res.user_type === 'vip' || res.user_type === 'trial');
+    })
+    .catch(() => {
+      postMessage('auth', false);
+    });
 }
 
 @connect(({ login }) => ({ token: login.token }))
@@ -59,91 +83,125 @@ class Detail extends Component<IProps, IState> {
   state = {
     tool: {},
     similarity: [],
-    visibleHelp: true,
+    visibleHelp: false,
     visibleFrame: true,
+    visiblePayModal: false,
     loading: true,
     iframeHeight: undefined,
+    visibleInput: false,
+    toolUrl: '',
   };
+  consoleInterval: any = null;
+  accessInterval: any = null;
+  cost: string = 'vip';
 
   componentDidMount() {
     const alias = this.props.match.params.id;
-    const { token } = this.props;
 
-    // monitorConsole(
-    //   () => {
-    //     this.setState({
-    //       visibleFrame: false,
-    //     });
-    //     Modal.warning({
-    //       title: '警告',
-    //       content: '请按F12键或其他方式关闭控制台!',
-    //       okText: '知道了',
-    //     });
-    //   },
-    //   () => {
-    //     this.setState({
-    //       visibleFrame: true,
-    //     });
-    //     Modal.destroyAll();
-    //   },
-    // ).init();
+    process.env.NODE_ENV === 'production' &&
+      (this.consoleInterval = monitorConsole(
+        () => {
+          this.setState({
+            visibleFrame: false,
+          });
+          Modal.warning({
+            title: '警告',
+            content: '请按F12键或其他方式关闭控制台!',
+            okText: '知道了',
+          });
+        },
+        () => {
+          this.setState({
+            visibleFrame: true,
+          });
+          Modal.destroyAll();
+        },
+      ).init());
 
     window.addEventListener('message', (event: any) => {
-      const { token, dispatch }: any = this.props;
+      if (!/http:\/\/127\.0\.0\.1:8099|https:\/\/api\.fastools\.cn/.test(event.origin)) return;
 
-      // window.frames.tool?.postMessage(true, '*');
-      if (event.data === 'noaccess') {
-        if (token) {
-          dispatch({
-            type: 'global/changePayPaneVisible',
-            payload: true,
-          });
-        } else {
-          dispatch({
-            type: 'global/changeLoginPaneVisible',
-            payload: true,
-          });
-        }
-      } else if (event.data === 'undefined') {
-        const hide = message.loading('获取权限中...', 0);
-        queryVipExpires().then(res => {
-          hide();
-          window.frames.tool?.postMessage(res.user_type === 'vip', '*');
-        });
-      } else if (event.data === 'loaded') {
-        this.setState({
-          loading: false,
-        });
+      const { token }: any = this.props;
+      const data = event.data;
 
-        if (token)
-          queryVipExpires().then(res => {
-            window.frames.tool?.postMessage(res.user_type === 'vip', '*');
+      switch (data.name) {
+        case 'auth':
+          if (data.value === 'noaccess') this.handleOpenPayModal();
+          if (data.value === undefined) {
+            if (hasFree(this.cost)) break;
+            const { tool }: any = this.state;
+            const hide = message.loading({ content: '获取权限中...', duration: 0, key: 'access' });
+            const params: IQueryVipExpires = { order: localStorage.getItem('trial') || '', toolId: tool._id };
+
+            queryVipExpires(params)
+              .then(({ user_type }) => {
+                if (user_type === 'vip' || user_type === 'trial') {
+                  postMessage('auth', true);
+                  message.success({ content: '获取成功,请重新点击', key: 'access' });
+                } else this.handleOpenPayModal();
+              })
+              .catch(error => {
+                message.error('网络错误');
+              })
+              .finally(() => {
+                hide();
+              });
+          }
+          break;
+        case 'status':
+          const { tool }: any = this.state;
+          if (data.value === 'loaded') {
+            this.setState({
+              loading: false,
+            });
+            // 检测是否免费
+            if (hasFree(this.cost)) break;
+
+            if (localStorage.getItem('trial') || token) {
+              const params: IQueryVipExpires = { order: localStorage.getItem('trial') || '', toolId: tool._id };
+
+              queryAccess(params);
+              this.accessInterval = setInterval(() => {
+                this.accessInterval = setInterval(() => queryAccess(params), 1000 * 120);
+              }, 1000 * 120);
+            } else postMessage('auth', false);
+          } else if (data.value === 'run') console.log('run');
+          break;
+        case 'height':
+          this.setState({
+            iframeHeight: `calc(${data.value} + 100px)`,
           });
-        else window.frames.tool?.postMessage(false, '*');
-      } else if (Number(event.data).toString() !== 'NaN') {
-        this.setState({
-          iframeHeight: Number(event.data),
-        });
+          break;
+        case 'modal':
+          Modal[data.method](data.params);
+          break;
+        case 'message':
+          message[data.method](data.params);
       }
     });
 
     queryTool(alias).then(res => {
+      if (!res.tool) return;
+      this.cost = res.tool.cost;
+      hasFree(this.cost);
       this.setState({
         tool: res.tool,
         similarity: res.similarity,
+        toolUrl: `${prefix}/tools/static/${res.tool.alias}.html`,
       });
       this.props.dispatch({
         type: 'global/setBreadcrumbName',
         payload: res.tool.title,
       });
-      this.openNotification();
-      document.title = res.tool.title + '-快用工具-好快又好用-在线工具';
+      document.title = res.tool.title + ' - 快用工具 - 又快又好用的在线工具网';
     });
   }
 
   componentWillUnmount() {
     notification.destroy();
     Modal.destroyAll();
+    clearInterval(this.consoleInterval);
+    clearInterval(this.accessInterval);
     this.props.dispatch({
       type: 'global/setBreadcrumbName',
       payload: '',
@@ -157,7 +215,9 @@ class Detail extends Component<IProps, IState> {
     });
     const args = {
       message: '使用说明',
-      description: tool.direction,
+      description: (
+        <div style={{ maxHeight: 600, overflow: 'auto' }} aria-label="使用说明" dangerouslySetInnerHTML={{ __html: tool.direction }} />
+      ),
       duration: 0,
       top: 70,
       icon: <QuestionCircleOutlined style={{ color: '#52c41a' }} />,
@@ -197,7 +257,11 @@ class Detail extends Component<IProps, IState> {
         }
         break;
       case 1:
-        window.open('https://support.qq.com/products/126066', 'feedback');
+        openFeedback({
+          customInfo: JSON.stringify({
+            toolName: tool.title,
+          }),
+        });
         break;
       case 2:
         message.success({ content: '已复制链接' });
@@ -208,12 +272,67 @@ class Detail extends Component<IProps, IState> {
     }
   };
 
+  handleOpenPay = () => {
+    const { token, dispatch }: IProps = this.props;
+
+    if (token)
+      dispatch({
+        type: 'global/changePayPaneVisible',
+        payload: true,
+      });
+    else
+      dispatch({
+        type: 'global/changeLoginPaneVisible',
+        payload: true,
+      });
+
+    this.setState({
+      visiblePayModal: false,
+    });
+  };
+
+  handleOpenPayModal = () => {
+    this.setState({
+      visiblePayModal: true,
+    });
+  };
+
+  onHidePayModal = () => {
+    this.setState({
+      visiblePayModal: false,
+    });
+    this.handleHidePaidInput();
+  };
+
+  handleOpenPaidInput = () => {
+    this.setState({
+      visibleInput: true,
+    });
+  };
+
+  handleHidePaidInput = () => {
+    this.setState({
+      visibleInput: false,
+    });
+  };
+
   render() {
-    const { tool, similarity, visibleHelp, visibleFrame, loading, iframeHeight }: IState = this.state;
+    const {
+      tool,
+      similarity,
+      visibleHelp,
+      visibleFrame,
+      loading,
+      iframeHeight,
+      toolUrl,
+      visiblePayModal,
+      visibleInput,
+    }: IState = this.state;
+
     return (
       <div className={styles.container} id="toolContainer">
         <header className={styles.header}>
-          <Avatar src={tool.cover} />
+          <img className={styles.headerCover} src={tool.cover} alt={styles.title} />
           <h2 className={styles.headerTitle}>{tool.title}</h2>
           {buttons.map((item, index) => (
             <Tooltip title={item.title} key={item.title}>
@@ -240,8 +359,9 @@ class Detail extends Component<IProps, IState> {
               className={styles.iframe}
               id="tool"
               name="tool"
-              height={iframeHeight}
-              src={`${prefix}/tools/static/${this.props.match.params.id}.html`}
+              style={{ height: iframeHeight }}
+              src={toolUrl}
+              // src={`http://127.0.0.1:8001`}
               allow="payment"
             />
           </Spin>
@@ -259,7 +379,7 @@ class Detail extends Component<IProps, IState> {
             <p aria-label="工具介绍">{tool.desc}</p>
           </Collapse.Panel>
           <Collapse.Panel header="使用说明" key="1">
-            <p aria-label="使用说明">{tool.direction}</p>
+            <div aria-label="使用说明" dangerouslySetInnerHTML={{ __html: tool.direction }} />
           </Collapse.Panel>
         </Collapse>
 
@@ -272,6 +392,24 @@ class Detail extends Component<IProps, IState> {
             </Link>
           ))}
         </Card>
+
+        <Modal
+          title="支付"
+          visible={visiblePayModal}
+          onCancel={this.onHidePayModal}
+          maskClosable={false}
+          destroyOnClose
+          footer={[
+            <Button className={styles.paidButton} onClick={this.handleOpenPaidInput} disabled={visibleInput} key="back" type="primary">
+              已支付
+            </Button>,
+            <Button key="submit" type="primary" onClick={this.handleOpenPay} danger>
+              升级VIP(享全站工具)
+            </Button>,
+          ]}
+        >
+          <PayModal visibleInput={visibleInput} tool={tool} onHidePayModal={this.onHidePayModal} onHideInput={this.handleHidePaidInput} />
+        </Modal>
       </div>
     );
   }
