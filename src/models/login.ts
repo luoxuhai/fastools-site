@@ -76,6 +76,7 @@ export default {
       localforage.setItem('user', { user: state.user, token: state.token, ...payload }).catch(err => {
         console.log(err);
       });
+      if (payload.user) postMessage('auth', payload.user.user_type === 'vip' || undefined);
       return {
         ...state,
         ...payload,

@@ -3,7 +3,7 @@ import { Modal, Button, Form, Input, Tooltip, message } from 'antd';
 import { connect } from 'dva';
 import localforage from 'localforage';
 import Verification from './Verification';
-import { getCountDown } from '@/utils/utils';
+import { getCountDown, postMessage } from '@/utils/utils';
 import styles from './index.less';
 import { queryVerificationCode, login } from '@/services/user';
 
