@@ -29,12 +29,15 @@ const codeMessage = {
  * 异常处理程序
  */
 
+let count = 0;
+
 const errorHandler = error => {
   const { response = {} } = error;
   const errortext = codeMessage[response.status] || response.statusText;
   const { status } = response;
   console.error(errortext);
   if (status === 422) {
+    if (++count > 1) return;
     notification.warning({
       message: '登录状态过期',
       description: (
@@ -46,6 +49,7 @@ const errorHandler = error => {
               payload: true,
             });
             notification.close('reLogin');
+            count = 0;
           }}
           type="primary"
         >
@@ -54,6 +58,9 @@ const errorHandler = error => {
       ),
       duration: 0,
       key: 'reLogin',
+      onClose() {
+        count = 0;
+      }
     });
     window.g_app._store.dispatch({
       type: 'login/logout',

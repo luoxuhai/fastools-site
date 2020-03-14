@@ -91,12 +91,10 @@ export default withRouter(
             className={styles.header}
             style={{ position: location.pathname.slice(0, -1).split('/').length === 3 ? 'static' : undefined }}
           >
-            <div className={styles.logo}>
-              <NavLink to={navs[0].link} title="快用工具">
-                <img src={innerWidth > 480 ? logoLarge : logo} alt="快用工具" />
-                <h1 style={{ width: 0, height: 0, overflow: 'hidden' }}>快用工具</h1>
-              </NavLink>
-            </div>
+            <NavLink className={styles.logo} to={navs[0].link} title="快用工具">
+              <img src={innerWidth > 480 ? logoLarge : logo} alt="快用工具" />
+              <h1>快用工具</h1>
+            </NavLink>
             <Menu
               className={styles.navbarMenu}
               selectedKeys={[location.pathname]}

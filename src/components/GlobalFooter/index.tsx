@@ -122,15 +122,23 @@ export default () => {
             <li key={item.title}>
               {index >= 4 ? (
                 <>
-                  <CommentOutlined className={styles.qqIcon} />{' '}
+                  <CommentOutlined className={styles.qqIcon} />
+                  &nbsp;&nbsp;
                   <a href={item.url} target="_blank" title={item.title}>
                     {item.title}
                   </a>
                 </>
               ) : (
                 <>
-                  {index === 3 ? <><WechatOutlined />{' '}</> : <img className={styles.qqIcon} src={QQIcon} />}
+                  {index === 3 ? (
+                    <>
+                      <WechatOutlined />
+                    </>
+                  ) : (
+                    <img className={styles.qqIcon} src={QQIcon} />
+                  )}
                   <Popover content={<img width="150px" src={item.qrcode} />}>
+                    &nbsp;&nbsp;
                     <a href={item.url} target="_blank" title={item.title}>
                       {item.title}
                     </a>
