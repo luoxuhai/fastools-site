@@ -83,7 +83,7 @@
   }
 
   .highlight {
-    background-color: var(--antd-wave-shadow-color);
+    background-color: #faad14d4;
     color: white;
     border-radius: 2px;
   }
@@ -92,6 +92,8 @@
     padding: 15px;
     width: 60%;
     max-width: 780px;
+    min-height: 150px;
+    max-height: calc(100vh - 110px - 45.6px - 48px - 120px);
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
@@ -99,6 +101,7 @@
 
     @media (max-width: 480px) {
       width: 330px;
+      max-height: calc(100vh - 30px - 45.6px - 48px - 120px);
     }
 
     .listItem {

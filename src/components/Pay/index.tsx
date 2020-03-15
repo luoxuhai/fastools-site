@@ -71,7 +71,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
           order = '';
         }
       });
-    }, 1800);
+    }, 1400);
 
     return () => {
       clearInterval(interval);

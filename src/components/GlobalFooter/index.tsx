@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Divider, Popover } from 'antd';
-import { CommentOutlined, WechatOutlined } from '@ant-design/icons';
+import { CommentOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
 import styles from './index.less';
 
 const qrcode = 'https://static.fastools.cn/images/qrcode.jpg?x-oss-process=style/fade';
@@ -24,7 +24,7 @@ const contact = [
   },
   {
     title: '微信小程序',
-    url: '#',
+    url: '',
     qrcode: 'https://static.fastools.cn/images/miniapp.jpg',
   },
   {
@@ -32,8 +32,8 @@ const contact = [
     url: 'https://gitter.im/fastools/community',
   },
   {
-    title: '吐个槽',
-    url: 'https://support.qq.com/products/126066',
+    title: '关于我们',
+    url: 'https://support.qq.com/products/126066/team/',
   },
 ];
 
@@ -102,10 +102,6 @@ const links = [
     title: 'Chrome插件(谷歌浏览器插件) ',
     url: 'https://chromecj.com/',
   },
-  {
-    title: '电鸭社区',
-    url: 'https://eleduck.com/',
-  },
 ];
 
 export default () => {
@@ -122,7 +118,7 @@ export default () => {
             <li key={item.title}>
               {index >= 4 ? (
                 <>
-                  <CommentOutlined className={styles.qqIcon} />
+                  {index === 4 ? <CommentOutlined className={styles.qqIcon} /> : <UserOutlined className={styles.qqIcon} />}
                   &nbsp;&nbsp;
                   <a href={item.url} target="_blank" title={item.title}>
                     {item.title}

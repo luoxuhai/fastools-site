@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { List, Tooltip, Empty } from 'antd';
 import { SearchOutlined, EnterOutlined, LoadingOutlined, CloseCircleFilled } from '@ant-design/icons';
 import Link from 'umi/link';
-import dynamic from 'umi/dynamic';
-import _Highlighter from 'react-highlight-words';
+import Highlighter from 'react-highlight-words';
 import { searchTool } from '@/services/tool';
 import styles from './index.less';
 
@@ -25,18 +24,7 @@ const lineStyle = {
 
 let inputValue = '';
 
-const delay = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
-
-const Highlighter: any = dynamic({
-  loader: async function() {
-    await delay(100);
-    return ({ title }: { title: string }) => (
-      <_Highlighter highlightClassName={styles.highlight} searchWords={inputValue.split('')} autoEscape={true} textToHighlight={title} />
-    );
-  },
-});
-
-function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX.Element {
+function SearchPane({ onSearch, onClose, onKeyPress, tools, keywords, loading }: any): JSX.Element {
   return (
     <div className={styles.searchPane} style={window.supportCSS3('backdrop-filter') ? {} : { backgroundColor: '#e3e3e3' }}>
       <Tooltip className={styles.close} title="关闭" placement="left">
@@ -76,7 +64,7 @@ function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX
               <List.Item className={styles.listItem}>
                 <List.Item.Meta
                   avatar={<img className={styles.listItemIcon} src={item.cover} alt={item.title} />}
-                  title={<Highlighter title={item.title} />}
+                  title={ <Highlighter highlightClassName={styles.highlight} searchWords={keywords} autoEscape={true} textToHighlight={item.title} />}
                   description={item.desc + '...'}
                 />
               </List.Item>
@@ -84,7 +72,7 @@ function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX
           )}
         />
       ) : (
-        <Empty description="暂无数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        <Empty description="空" image={Empty.PRESENTED_IMAGE_SIMPLE} />
       )}
     </div>
   );
@@ -93,6 +81,7 @@ function SearchPane({ onSearch, onClose, onKeyPress, tools, loading }: any): JSX
 export default ({ full = true }: any) => {
   const [visible, setVisible] = useState(false);
   const [tools, setTools]: any[] = useState([]);
+  const [keywords, setKeywords]: any[] = useState([]);
   const [loading, setLoading] = useState(false);
 
   function handleVisible() {
@@ -102,13 +91,20 @@ export default ({ full = true }: any) => {
 
   function handleClose() {
     setVisible(false);
+    inputValue = '';
     bodyEl.style.overflow = 'auto';
   }
 
   function handleSearch() {
     setLoading(true);
-    searchTool(inputValue).then(res => {
-      if (res instanceof Array) setTools(res);
+    searchTool(inputValue).then(({ tools, keywords }) => {
+      if (tools.length) {
+        setTools(tools);
+        setKeywords(keywords);
+      } else {
+        setTools([]);
+        setKeywords([]);
+      }
       setLoading(false);
     });
   }
@@ -137,7 +133,16 @@ export default ({ full = true }: any) => {
         />
         {full && <EnterOutlined className={styles.search__iconenter} />}
       </div>
-      {visible && <SearchPane onSearch={handleSearch} onClose={handleClose} onKeyPress={handleKeyPress} tools={tools} loading={loading} />}
+      {visible && (
+        <SearchPane
+          onSearch={handleSearch}
+          onClose={handleClose}
+          onKeyPress={handleKeyPress}
+          tools={tools}
+          keywords={keywords}
+          loading={loading}
+        />
+      )}
     </>
   );
 };

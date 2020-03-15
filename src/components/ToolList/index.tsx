@@ -19,7 +19,7 @@ export const ToolList = ({ tools, title }: any) => {
   return (
     <Card className={styles.card} title={<h2>{title}</h2>}>
       {tools.map((item: any) => (
-        <div onClick={e => handleToDetail(item, e)}>
+        <div onClick={e => handleToDetail(item, e)} key={item._id}>
           <Card.Grid className={styles.cardItem} key={item._id}>
             <header className={styles.header}>
               <img className={styles.cover} src={item.cover} alt={item.title} />

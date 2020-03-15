@@ -87,7 +87,7 @@ export default connect(({ login }: any) => ({ user: login.user }))(({ user, disp
                 )}
               />
             ) : (
-              <Empty description="暂无数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty description="空" image={Empty.PRESENTED_IMAGE_SIMPLE} />
             )}
           </Tabs.TabPane>
         ))}

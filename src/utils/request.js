@@ -33,10 +33,11 @@ let count = 0;
 
 const errorHandler = error => {
   const { response = {} } = error;
-  const errortext = codeMessage[response.status] || response.statusText;
-  const { status } = response;
-  console.error(errortext);
-  if (status === 422) {
+  const { status, statusText } = response;
+
+  console.error(process.env.NODE_ENV === 'production' ? statusText : codeMessage[status]);
+
+  if (status === 422 && statusText === 'invalid token') {
     if (++count > 1) return;
     notification.warning({
       message: '登录状态过期',
@@ -60,7 +61,7 @@ const errorHandler = error => {
       key: 'reLogin',
       onClose() {
         count = 0;
-      }
+      },
     });
     window.g_app._store.dispatch({
       type: 'login/logout',
@@ -79,7 +80,6 @@ const errorHandler = error => {
 export const prefix = process.env.NODE_ENV === 'production' ? 'https://api.fastools.cn' : 'http://127.0.0.1:8099';
 
 const request = extend({
-  maxCache: 200,
   prefix, // http://testluo.xiaomy.net
   errorHandler,
 });

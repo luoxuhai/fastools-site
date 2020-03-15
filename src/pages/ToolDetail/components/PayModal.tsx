@@ -34,7 +34,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
           order = '';
         }
       });
-    }, 1800);
+    }, 1400);
 
     return () => {
       clearInterval(interval);
@@ -143,7 +143,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
             <div className={styles.payInfo}>
               <p className={styles.money}>
                 <span className={styles.price}>
-                  <span className={styles.strong}>1</span>.99
+                  <span className={styles.strong}>0</span>.99
                 </span>{' '}
                 元试用本工具1天
               </p>
