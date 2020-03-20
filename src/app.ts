@@ -5,4 +5,5 @@ export const dva = {
       console.error(err.message);
     },
   },
+  plugins: process.env.NODE_ENV === 'production' ? null : [require('dva-logger')()],
 };

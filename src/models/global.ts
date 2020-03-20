@@ -8,8 +8,9 @@ export default {
   state: {
     loginPaneVisible: false,
     payPaneVisible: false,
+    visibleDrawer: false,
     innerWidth: window.innerWidth,
-    loggingin: false,
+    logging: false,
     breadcrumbName: '',
     isClickNavbar: false,
   },
@@ -67,6 +68,13 @@ export default {
       };
     },
 
+    changeVisibleDrawer(state: any, { payload }: any) {
+      return {
+        ...state,
+        visibleDrawer: payload,
+      };
+    },
+
     setInnerWidth(state: any, { payload }: any) {
       return {
         ...state,
@@ -74,10 +82,10 @@ export default {
       };
     },
 
-    changeLoggingin(state: any, { payload }: any) {
+    changeLogging(state: any, { payload }: any) {
       return {
         ...state,
-        loggingin: payload,
+        logging: payload,
       };
     },
 

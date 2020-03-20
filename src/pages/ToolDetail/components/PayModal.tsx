@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Spin, Input, Popover, Alert, Modal, message } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { connect } from 'dva';
-import styles from './index.less';
+import styles from './PayModal.less';
 import { queryPayCode, queryPayInfo, queryTrialOrder } from '@/services/pay';
 import { IQueryVipExpires } from '@/services/user';
 import { download, postMessage } from '@/utils/utils';
@@ -34,7 +34,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
           order = '';
         }
       });
-    }, 1400);
+    }, 1000);
 
     return () => {
       clearInterval(interval);
@@ -113,6 +113,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
               <Input className={styles.input} onChange={handleInputChange} autoFocus placeholder="请输入单号" maxLength={40} />
               <Popover
                 title="单号查看帮助"
+                placement="right"
                 content={
                   <>
                     <img width="300px" src={helpImage} />
@@ -144,8 +145,8 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
               <p className={styles.money}>
                 <span className={styles.price}>
                   <span className={styles.strong}>0</span>.99
-                </span>{' '}
-                元试用本工具1天
+                </span>
+                &nbsp; 元试用本工具1天
               </p>
               <p>支持使用微信扫码支付</p>
               <p>

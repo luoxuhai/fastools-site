@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Alert } from 'antd';
 import { connect } from 'dva';
+import router from 'umi/router';
 
 const styles = {
   normal: {
@@ -13,32 +14,40 @@ const styles = {
 
 export default connect(({ global }: any) => ({ ...global }))(({ dispatch }: any) => {
   useEffect(() => {
-    dispatch({
-      type: 'global/changeLoggingin',
-      payload: true,
-    });
-
-    if (window.QC.Login.check()) {
-      const access_token =
+    let access_token = '';
+    try {
+      access_token =
         location.hash
           .split('=')[1]
           .split('&')
           .shift() || '';
+    } catch {
+      router.replace('/');
+    }
 
-      if (!window.isMobile) window.localStorage.setItem('access_token', access_token);
-      dispatch({
-        type: 'login/login',
-        payload: {
-          access_token,
-        },
-      });
+    dispatch({
+      type: 'global/changeLogging',
+      payload: true,
+    });
+
+    if (window.QC.Login.check()) {
+      if (window.isMobile)
+        dispatch({
+          type: 'login/login',
+          payload: {
+            access_token,
+          },
+        });
+      else window.localStorage.setItem('access_token', access_token);
 
       window.localStorage.removeItem('access_token');
     }
 
+    router.replace('/');
+
     return () => {
       dispatch({
-        type: 'global/changeLoggingin',
+        type: 'global/changeLogging',
         payload: false,
       });
     };

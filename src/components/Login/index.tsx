@@ -28,6 +28,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
       type: 'global/changeLoginPaneVisible',
       payload: false,
     });
+    window.removeEventListener('storage', onStorage);
   }
 
   function getVerificationCode() {
@@ -54,6 +55,24 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
     setButtonText('获取验证码');
   }
 
+  function onStorage(e: any) {
+    if (e.key === 'access_token' && e.newValue) {
+      window.loginWin.close();
+      dispatch({
+        type: 'global/changeLogging',
+        payload: true,
+      });
+      dispatch({
+        type: 'login/login',
+        payload: {
+          access_token: e.newValue,
+        },
+      });
+      window.localStorage.removeItem('access_token');
+      onCancel();
+    }
+  }
+
   function destroy() {
     stopLoadingCode();
     form.setFieldsValue({
@@ -63,6 +82,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
     tel = '';
     setValidateStatusCode(false);
     setValidateStatusTel(false);
+    window.removeEventListener('storage', onStorage);
   }
 
   function handleOK() {
@@ -89,18 +109,19 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
   const onFinish = (values: any) => {
     setLoadingLogin(true);
     login(values)
-      .then(res => {
+      .then(async ({ user, token }) => {
         setLoadingLogin(false);
-        if (res.token) {
+        if (user) {
+          const { _id, nickname, avatar, user_type } = user;
           message.success({ content: '登录成功' });
+          if (user_type !== 'vip') visiblePayPane();
           dispatch({
             type: 'login/setUserInfo',
-            payload: res,
+            payload: { token, user: { _id, nickname, avatar, user_type } },
           });
-          localforage.setItem('user', res);
+          await localforage.setItem('user', { token, user: { _id, nickname, avatar } });
           destroy();
           onCancel();
-          visiblePayPane();
         } else {
           setValidateStatusCode('error');
           setHelpTextCode('验证码错误!');
@@ -120,20 +141,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
       redirectURI: location.origin + '/login',
     });
     if (window.isMobile) localStorage.setItem('loginPath', location.pathname);
-    else
-      window.addEventListener('storage', e => {
-        if (e.key === 'access_token' && e.newValue) {
-          dispatch({
-            type: 'login/login',
-            payload: {
-              access_token: e.newValue,
-            },
-          });
-          window.localStorage.removeItem('access_token');
-          onCancel();
-          visiblePayPane();
-        }
-      });
+    else window.addEventListener('storage', onStorage);
   }
 
   return (
@@ -144,7 +152,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
         onCancel={onCancel}
         maskClosable={false}
         title="登录/注册"
-        width={400}
+        width={450}
         zIndex={1002}
         footer={null}
       >

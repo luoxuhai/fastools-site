@@ -152,41 +152,18 @@ export function requestFullScreen(element: any) {
 
 export function pushUrl() {
   // 百度
-  (function() {
-    !(function() {
-      var e = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,
-        r = window.location.href;
-      if (!e.test(r)) {
-        var n = '//api.share.baidu.com/s.gif?l=' + r;
-        var t = new Image();
-        t.src = n;
-      }
-    })(window);
-  })();
-
-  // 360
-  // (function() {
-  //   (function(e) {
-  //     function t(e) {
-  //       var t = location.href,
-  //         n = t.split('').reverse(),
-  //         r = e.split(''),
-  //         i = [];
-  //       for (var s = 0, o = 16; s < o; s++) i.push(r[s] + (n[s] || ''));
-  //       return i.join('');
-  //     }
-  //     var n = /([http|https]:\/\/[a-zA-Z0-9\_\.]+\.so\.com)/gi,
-  //       r = e.location.href;
-  //     if (r && !n.test(r) && window.navigator.appName) {
-  //       var i = '//s.360.cn/so/zz.gif',
-  //         s = document.getElementById('sozz'),
-  //         o = s.src.split('?')[1],
-  //         u = t(o),
-  //         a = new Image();
-  //       r && (i += '?url=' + encodeURIComponent(r)), o && (i += '&sid=' + o), u && (i += '&token=' + u), o && (a.src = i);
-  //     }
-  //   })(window);
-  // })();
+  (function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
 }
 
 /**
@@ -220,4 +197,20 @@ export function postMessage(name: string, value: any) {
     },
     '*',
   );
+}
+
+export class UnloadConfirm {
+  private static onListener(e: any) {
+    var confirmationMessage = 'o/';
+    (e || window.event).returnValue = confirmationMessage; // Gecko and Trident
+    return confirmationMessage; // Gecko and WebKit
+  }
+
+  public static set() {
+    window.addEventListener('beforeunload', this.onListener);
+  }
+
+  public static remove() {
+    window.removeEventListener('beforeunload', this.onListener);
+  }
 }

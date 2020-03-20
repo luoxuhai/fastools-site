@@ -53,7 +53,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
           paySuccess = true;
           message.success({ content: '支付成功!' });
           getPayCode(currentIndex);
-          postMessage('auth', true)
+          postMessage('auth', true);
           dispatch({
             type: 'global/changePayPaneVisible',
             payload: false,
@@ -71,7 +71,7 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
           order = '';
         }
       });
-    }, 1400);
+    }, 1000);
 
     return () => {
       clearInterval(interval);

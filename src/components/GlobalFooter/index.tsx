@@ -99,8 +99,8 @@ const links = [
     url: 'https://eleduck.com/',
   },
   {
-    title: 'Chrome插件(谷歌浏览器插件) ',
-    url: 'https://chromecj.com/',
+    title: ' Chrome扩展插件下载',
+    url: 'https://www.ijidi.cn/',
   },
 ];
 

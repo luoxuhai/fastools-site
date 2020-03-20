@@ -37,7 +37,7 @@ const config: IConfig = {
           manifestOptions: {
             srcPath: 'src/manifest.json',
           },
-          // workboxPluginMode: 'InjectManifest',
+          workboxPluginMode: 'InjectManifest',
           workboxOptions: {
             importWorkboxFrom: 'local',
           },

@@ -9,7 +9,6 @@ import {
   QuestionCircleOutlined,
   QuestionCircleFilled,
 } from '@ant-design/icons';
-import Link from 'umi/link';
 // import AES from 'crypto-js/aes';
 // import encUtf8 from 'crypto-js/enc-utf8';
 // import modeEcb from 'crypto-js/mode-ecb';
@@ -19,8 +18,9 @@ import { queryTool, star } from '@/services/tool';
 import { queryVipExpires, IQueryVipExpires } from '@/services/user';
 import { openFeedback } from '@/components/Feedback';
 import PayModal from './components/PayModal';
+import Similarity from './components/Similarity';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { monitorConsole, postMessage } from '@/utils/utils';
+import { monitorConsole, postMessage, UnloadConfirm } from '@/utils/utils';
 import styles from './index.less';
 import tool from 'mock/tool';
 
@@ -50,14 +50,13 @@ interface IProps {
 }
 interface IState {
   tool: any;
-  similarity: any[];
   visibleHelp: boolean;
   visibleFrame: boolean;
   visiblePayModal: boolean;
   loading: boolean;
   visibleInput: boolean;
   toolUrl: string;
-
+  alias: string;
   iframeHeight: string | undefined;
 }
 
@@ -78,11 +77,9 @@ function queryAccess(params?: IQueryVipExpires) {
     });
 }
 
-@connect(({ login }) => ({ token: login.token }))
-class Detail extends Component<IProps, IState> {
+class ToolDetailPage extends Component<IProps, IState> {
   state = {
     tool: {},
-    similarity: [],
     visibleHelp: false,
     visibleFrame: true,
     visiblePayModal: false,
@@ -90,14 +87,16 @@ class Detail extends Component<IProps, IState> {
     iframeHeight: undefined,
     visibleInput: false,
     toolUrl: '',
+    alias: this.props.match.params.id
   };
   consoleInterval: any = null;
   accessInterval: any = null;
   cost: string = 'vip';
 
   componentDidMount() {
-    const alias = this.props.match.params.id;
+    const { alias } = this.state;
 
+    UnloadConfirm.set();
     process.env.NODE_ENV === 'production' &&
       (this.consoleInterval = monitorConsole(
         () => {
@@ -161,9 +160,7 @@ class Detail extends Component<IProps, IState> {
               const params: IQueryVipExpires = { order: localStorage.getItem('trial') || '', toolId: tool._id };
 
               queryAccess(params);
-              this.accessInterval = setInterval(() => {
-                this.accessInterval = setInterval(() => queryAccess(params), 1000 * 120);
-              }, 1000 * 120);
+              this.accessInterval = setInterval(() => queryAccess(params), 1000 * 60);
             } else postMessage('auth', false);
           } else if (data.value === 'run') console.log('run');
           break;
@@ -186,7 +183,6 @@ class Detail extends Component<IProps, IState> {
       hasFree(this.cost);
       this.setState({
         tool: res.tool,
-        similarity: res.similarity,
         toolUrl: `${prefix}/tools/static/${res.tool.alias}.html`,
       });
       this.props.dispatch({
@@ -198,6 +194,7 @@ class Detail extends Component<IProps, IState> {
   }
 
   componentWillUnmount() {
+    UnloadConfirm.remove();
     notification.destroy();
     Modal.destroyAll();
     clearInterval(this.consoleInterval);
@@ -319,7 +316,7 @@ class Detail extends Component<IProps, IState> {
   render() {
     const {
       tool,
-      similarity,
+      alias,
       visibleHelp,
       visibleFrame,
       loading,
@@ -383,15 +380,7 @@ class Detail extends Component<IProps, IState> {
           </Collapse.Panel>
         </Collapse>
 
-        <Card className={styles.card} title="推荐工具">
-          {similarity.map((item: any) => (
-            <Link to={`/${item.tool_type}/${item.alias}`} target="_blank" title={item.title} aria-label={item.title}>
-              <Card.Grid className={styles.cardItem} key={item._id}>
-                <Card.Meta avatar={<Avatar src={item.cover} />} title={item.title} description={item.desc + '...'} />
-              </Card.Grid>
-            </Link>
-          ))}
-        </Card>
+        <Similarity alias={alias} />
 
         <Modal
           title="支付"
@@ -401,7 +390,7 @@ class Detail extends Component<IProps, IState> {
           destroyOnClose
           footer={[
             <Button className={styles.paidButton} onClick={this.handleOpenPaidInput} disabled={visibleInput} key="back" type="primary">
-              已支付
+              已支付过
             </Button>,
             <Button key="submit" type="primary" onClick={this.handleOpenPay} danger>
               升级VIP(享全站工具)
@@ -415,4 +404,6 @@ class Detail extends Component<IProps, IState> {
   }
 }
 
-export default Detail;
+export default connect(({ login }: any) => ({
+  token: login.token,
+}))(ToolDetailPage);

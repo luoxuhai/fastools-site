@@ -1,19 +1,18 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-restricted-globals */
-// service-worker.js
 
-/**
- * Handle third party requests
- */
+workbox.core.setCacheNameDetails({ prefix: 'fastools' });
 
-// workbox.core.setCacheNameDetails({
-//   prefix: 'fastools',
-//   suffix: 'v1',
-// });
-// // Control all opened tabs ASAP
-// workbox.clientsClaim();
+workbox.skipWaiting();
+workbox.clientsClaim();
 
-// workbox.routing.registerRoute(
-//   /^https:\/\/static.fastools.cn\/lib\/.+|^https:\/\/fastools.oss-cn-hangzhou.aliyuncs.com\/lib\/.+/,
-//   workbox.strategies.cacheOnly(),
-// );
+workbox.routing.registerRoute(
+  /^https:\/\/static.fastools.cn\/lib\/.+|^https:\/\/fastools.oss-cn-hangzhou.aliyuncs.com\/lib\/.+/,
+  workbox.strategies.cacheOnly(),
+);
+
+workbox.routing.registerRoute(/^https:\/\/api.fastools.cn\/v1\/tools\?.+/, workbox.strategies.networkFirst());
+
+self.__precacheManifest = [].concat(self.__precacheManifest || []);
+workbox.precaching.suppressWarnings();
+workbox.precaching.precacheAndRoute(self.__precacheManifest, {});

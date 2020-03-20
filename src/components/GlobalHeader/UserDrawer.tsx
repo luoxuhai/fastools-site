@@ -19,17 +19,14 @@ const tabs = [
 
 export default connect(({ login }: any) => ({ user: login.user }))(({ user, dispatch }: any) => {
   const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo]: any = useState(user);
 
   useEffect(() => {
     queryUserSpace().then(res => {
       if (!res._id) return;
+      setUserInfo({ ...userInfo, ...res});
       setLoading(false);
-      dispatch({
-        type: 'login/setUserInfo',
-        payload: { user: res },
-      });
     });
-    return () => {};
   }, []);
 
   function handlePay() {
@@ -42,17 +39,17 @@ export default connect(({ login }: any) => ({ user: login.user }))(({ user, disp
   return (
     <Spin spinning={loading}>
       <div className={styles.user}>
-        {user.avatar ? (
-          <Avatar size="default" className={styles.avatar} src={user.avatar} alt="avatar" />
+        {userInfo.avatar ? (
+          <Avatar size="default" className={styles.avatar} src={userInfo.avatar} alt="avatar" />
         ) : (
-          <ReactAvatar className={styles.avatar} name={user.nickname} size="60" round />
+          <ReactAvatar className={styles.avatar} name={userInfo.nickname} size="60" round />
         )}
         <div className={styles.userInfo}>
           <h2>{user.nickname}</h2>
           <div className={styles.vipContainer}>
-            {user.vip_expires && <h4>会员到期:{user.vip_expires}</h4>}
+            {userInfo.vip_expires && <h4>会员到期:{userInfo.vip_expires}</h4>}
             <Button onClick={handlePay} type="primary" danger>
-              {user.vip_expires ? '续费' : '充值VIP'}
+              {userInfo.vip_expires ? '续费' : '充值VIP'}
             </Button>
           </div>
         </div>
@@ -68,10 +65,10 @@ export default connect(({ login }: any) => ({ user: login.user }))(({ user, disp
             }
             key={String(index)}
           >
-            {user[item.dataKey] ? (
+            {userInfo[item.dataKey] ? (
               <List
                 itemLayout="horizontal"
-                dataSource={user[item.dataKey]}
+                dataSource={userInfo[item.dataKey]}
                 renderItem={(item: any) => (
                   <List.Item>
                     <List.Item.Meta

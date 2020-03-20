@@ -1,31 +1,22 @@
 import localforage from 'localforage';
 import { supportCSS3, disableReactDevTools } from '@/utils/utils';
-import { refreshToken } from '@/services/user';
 
 localforage.config({
   name: 'fastools',
+  driver: localforage.LOCALSTORAGE,
 });
-
-(async () => {
-  try {
-    await localforage.setItem('usable', true);
-  } catch (error) {
-    if (error === 'DOMException') {
-      localforage.setDriver(localforage.LOCALSTORAGE);
-    }
-  }
-})();
 
 function initUserInfo() {
   localforage.getItem('user').then((value: any) => {
     if (value) {
       window.g_app._store.dispatch({
         type: 'login/setUserInfo',
-        payload: value,
+        payload: { user: value.user, token: value.token },
       });
 
       window.g_app._store.dispatch({
         type: 'login/queryUserInfo',
+        payload: value.token,
       });
 
       window.g_app._store.dispatch({

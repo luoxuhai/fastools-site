@@ -12,7 +12,7 @@ import styles from './index.less';
 
 export default withRouter(
   connect(({ global, login }: any) => ({ ...global, login }))((props: any) => {
-    const { location, loggingin, payPaneVisible, breadcrumbName, dispatch } = props;
+    const { location, logging, payPaneVisible, breadcrumbName, dispatch } = props;
     const pathSnippets = location.pathname.split('/').filter((i: any) => i);
     const breadcrumbNameMap: any = {
       '/doc': '文档',
@@ -92,7 +92,7 @@ export default withRouter(
     }
 
     return (
-      <Spin spinning={loggingin} tip="QQ登录中，请稍后..." size="large">
+      <Spin spinning={logging} tip="QQ登录中，请稍后..." size="large">
         <Layout className={styles.layout}>
           <GlobalHeader />
           <Layout.Content

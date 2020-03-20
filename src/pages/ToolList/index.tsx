@@ -5,12 +5,6 @@ import router from 'umi/router';
 import { ToolList, NavNameMap } from '@/components/ToolList';
 import styles from './index.less';
 
-@connect(({ tool, global }) => ({
-  tools: tool.tools,
-  currentPage: tool.currentPage,
-  totalPage: tool.totalPage,
-  isClickNavbar: global.isClickNavbar,
-}))
 class ToolListPage extends Component {
   componentDidMount() {
     const { isClickNavbar, dispatch, match }: any = this.props;
@@ -70,4 +64,9 @@ class ToolListPage extends Component {
   }
 }
 
-export default ToolListPage;
+export default connect(({ tool, global }: any) => ({
+  tools: tool.tools,
+  currentPage: tool.currentPage,
+  totalPage: tool.totalPage,
+  isClickNavbar: global.isClickNavbar,
+}))(ToolListPage);

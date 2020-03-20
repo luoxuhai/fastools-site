@@ -15,10 +15,15 @@ export default {
   subscriptions: {},
 
   effects: {
-    *login({ payload }: any, { call, put }: any) {
-      const result = yield login(payload);
+    *login({ payload }: any, { put }: any) {
+      const { user, token } = yield login(payload);
 
-      if (!result.user) {
+      yield put({
+        type: 'global/changeLogging',
+        payload: false,
+      });
+
+      if (!user) {
         message.error({ content: '登录失败!' });
         return;
       }
@@ -29,32 +34,52 @@ export default {
           router.replace(loginPath);
           window.localStorage.removeItem('loginPath');
         } else router.replace('/');
-      } else window.loginWin.close();
+      }
 
       message.success({ content: '登录成功' });
 
+      if (user.user_type !== 'vip')
+        yield put({
+          type: 'global/changePayPaneVisible',
+          payload: true,
+        });
+
       yield put({
         type: 'setUserInfo',
-        payload: result,
+        payload: { user, token },
       });
+
+      yield localforage.setItem('user', { user, token });
     },
 
     *logout(_: any, { put }: any) {
+      postMessage('auth', undefined);
+
+      yield put({
+        type: 'global/changePayPaneVisible',
+        payload: false,
+      });
+      yield put({
+        type: 'global/changeVisibleDrawer',
+        payload: false,
+      });
       yield put({
         type: 'clearUserInfo',
       });
-      postMessage('auth', undefined);
+      yield localforage.removeItem('user');
     },
 
-    *queryUserInfo(_: any, { put }: any) {
+    *queryUserInfo({ payload }: any, { put }: any) {
       const result = yield queryUser();
 
       if (!result._id) return;
 
       yield put({
         type: 'setUserInfo',
-        payload: { user: result },
+        payload: { user: result, token: payload },
       });
+
+      yield localforage.setItem('user', { user: result, token: payload });
     },
 
     *refreshToken({ payload }: any, { put }: any) {
@@ -73,10 +98,10 @@ export default {
 
   reducers: {
     setUserInfo(state: any, { payload }: any) {
-      localforage.setItem('user', { user: state.user, token: state.token, ...payload }).catch(err => {
-        console.log(err);
-      });
-      if (payload.user) postMessage('auth', payload.user.user_type === 'vip' || undefined);
+      if (payload.user) {
+        postMessage('auth', payload.user.user_type === 'vip' || undefined);
+        delete payload.user.user_type;
+      }
       return {
         ...state,
         ...payload,
@@ -84,7 +109,6 @@ export default {
     },
 
     clearUserInfo(state: any) {
-      localforage.removeItem('user');
       return {
         ...state,
         user: {},

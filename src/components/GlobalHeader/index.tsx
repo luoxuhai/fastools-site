@@ -39,111 +39,123 @@ const navs = [
 ];
 
 export default withRouter(
-  connect(({ global, login }: any) => ({ innerWidth: global.innerWidth, user: login.user, token: login.token }))(
-    ({ user, token, innerWidth, dispatch }: any) => {
-      const [visibleDrawer, setVisibleDrawer] = useState(false);
-
-      function handelSelectMenuClick({ key }: any) {
-        if (key === 'center') {
-          setVisibleDrawer(true);
-        }
-      }
-
-      function handelShowLoginPane() {
+  connect(({ global, login }: any) => ({
+    innerWidth: global.innerWidth,
+    visibleDrawer: global.visibleDrawer,
+    user: login.user,
+    token: login.token,
+  }))(({ user, token, innerWidth, visibleDrawer, dispatch }: any) => {
+    function handelOpenDrawer({ key }: any) {
+      if (key === 'center') {
         dispatch({
-          type: 'global/changeLoginPaneVisible',
+          type: 'global/changeVisibleDrawer',
           payload: true,
         });
       }
+    }
 
-      function logout() {
-        Modal.confirm({
-          title: '确认退出登录?',
-          icon: <ExclamationCircleOutlined />,
-          cancelText: '取消',
-          okText: '确认',
-          maskClosable: true,
-          onOk() {
-            dispatch({
-              type: 'login/logout',
-            });
-          },
-        });
-      }
+    function handelCloseDrawer({ key }: any) {
+      dispatch({
+        type: 'global/changeVisibleDrawer',
+        payload: false,
+      });
+    }
 
-      const menuHeaderDropdown = (
-        <Menu className={styles.menu} onClick={handelSelectMenuClick}>
-          <Menu.Item key="center">
-            <UserOutlined />
-            个人中心
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item onClick={logout} key="logout">
-            <LogoutOutlined />
-            退出登录
-          </Menu.Item>
-        </Menu>
-      );
+    function handelShowLoginPane() {
+      dispatch({
+        type: 'global/changeLoginPaneVisible',
+        payload: true,
+      });
+    }
 
-      return (
-        <>
-          <Layout.Header
-            className={styles.header}
-            style={{ position: location.pathname.slice(0, -1).split('/').length === 3 ? 'static' : undefined }}
+    function logout() {
+      Modal.confirm({
+        title: '提示',
+        content: '确认退出登录?',
+        icon: <ExclamationCircleOutlined />,
+        cancelText: '取消',
+        okText: '确认',
+        maskClosable: true,
+        onOk() {
+          dispatch({
+            type: 'login/logout',
+          });
+        },
+      });
+    }
+
+    const menuHeaderDropdown = (
+      <Menu className={styles.menu} onClick={handelOpenDrawer}>
+        <Menu.Item key="center">
+          <UserOutlined />
+          个人中心
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item onClick={logout} key="logout">
+          <LogoutOutlined />
+          退出登录
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <>
+        <Layout.Header
+          className={styles.header}
+          style={{ position: location.pathname.slice(0, -1).split('/').length === 3 ? 'static' : undefined }}
+        >
+          <NavLink className={styles.logo} to={navs[0].link} title="快用工具">
+            <img src={innerWidth > 480 ? logoLarge : logo} alt="快用工具" />
+            <h1>快用工具</h1>
+          </NavLink>
+          <Menu
+            className={styles.navbarMenu}
+            selectedKeys={[location.pathname]}
+            theme="light"
+            mode="horizontal"
+            defaultSelectedKeys={['/']}
           >
-            <NavLink className={styles.logo} to={navs[0].link} title="快用工具">
-              <img src={innerWidth > 480 ? logoLarge : logo} alt="快用工具" />
-              <h1>快用工具</h1>
-            </NavLink>
-            <Menu
-              className={styles.navbarMenu}
-              selectedKeys={[location.pathname]}
-              theme="light"
-              mode="horizontal"
-              defaultSelectedKeys={['/']}
-            >
-              {navs.map(item => (
-                <Menu.Item key={item.link}>
-                  <NavLink to={item.link} title={item.title} aria-label={item.title}>
-                    {item.title}
-                  </NavLink>
-                </Menu.Item>
-              ))}
-            </Menu>
-            {innerWidth >= 768 && location.pathname !== '/' && <Search full={false} />}
-            <div className={styles.login}>
-              {token ? (
-                <Dropdown overlay={menuHeaderDropdown} trigger={['hover', 'click']}>
-                  <div className={styles.userContainer}>
-                    {user.avatar ? (
-                      <Avatar size="default" className={styles.avatar} src={user.avatar} alt="avatar" />
-                    ) : (
-                      <ReactAvatar className={styles.avatar} name={user.nickname} size="40" round />
-                    )}
-                    <span className={styles.name}>{user.nickname}</span>
-                  </div>
-                </Dropdown>
-              ) : (
-                <Button onClick={handelShowLoginPane} type="primary">
-                  登录/注册
-                </Button>
-              )}
-            </div>
-          </Layout.Header>
-          <Drawer
-            title="个人中心"
-            placement="right"
-            onClose={() => setVisibleDrawer(false)}
-            width={360}
-            visible={visibleDrawer}
-            closable
-            destroyOnClose
-            zIndex={1001}
-          >
-            <UserDrawer />
-          </Drawer>
-        </>
-      );
-    },
-  ),
+            {navs.map(item => (
+              <Menu.Item key={item.link}>
+                <NavLink to={item.link} title={item.title} aria-label={item.title}>
+                  {item.title}
+                </NavLink>
+              </Menu.Item>
+            ))}
+          </Menu>
+          {innerWidth >= 768 && location.pathname !== '/' && <Search full={false} />}
+          <div className={styles.login}>
+            {token ? (
+              <Dropdown overlay={menuHeaderDropdown} trigger={['hover', 'click']}>
+                <div className={styles.userContainer}>
+                  {user.avatar ? (
+                    <Avatar size="default" className={styles.avatar} src={user.avatar} alt="avatar" />
+                  ) : (
+                    <ReactAvatar className={styles.avatar} name={user.nickname} size="40" round />
+                  )}
+                  <span className={styles.name}>{user.nickname}</span>
+                </div>
+              </Dropdown>
+            ) : (
+              <Button onClick={handelShowLoginPane} type="primary">
+                登录/注册
+              </Button>
+            )}
+          </div>
+        </Layout.Header>
+        <Drawer
+          title="个人中心"
+          placement="right"
+          onClose={handelCloseDrawer}
+          width={360}
+          visible={visibleDrawer}
+          closable
+          destroyOnClose
+          zIndex={1001}
+        >
+          <UserDrawer />
+        </Drawer>
+      </>
+    );
+  }),
 );

@@ -13,4 +13,5 @@ interface Window {
   supportCSS3: Function;
   tool: any;
   isMobile: boolean;
+  $: any;
 }

@@ -6,15 +6,12 @@ import Search from '@/components/Search';
 import styles from './index.less';
 import { queryTools, EToolType } from '@/services/tool';
 
-@connect(({ tool }) => ({
-  tools: tool.tools,
-  currentPage: tool.currentPage,
-  totalPage: tool.totalPage,
-}))
-class Home extends Component {
+class HomePage extends Component {
   state = {
     recommend: [],
   };
+
+  props: any;
 
   componentDidMount() {
     queryTools({ tool_type: EToolType.recommend }).then((res: any) => {
@@ -74,4 +71,8 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default connect(({ tool }: any) => ({
+  tools: tool.tools,
+  currentPage: tool.currentPage,
+  totalPage: tool.totalPage,
+}))(HomePage);
