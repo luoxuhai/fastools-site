@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Spin, Input, Popover, Alert, Modal, message } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { connect } from 'dva';
+import localforage from 'localforage';
 import styles from './PayModal.less';
 import { queryPayCode, queryPayInfo, queryTrialOrder } from '@/services/pay';
 import { IQueryVipExpires } from '@/services/user';
@@ -27,9 +28,9 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
           if (paySuccess) return;
           paySuccess = true;
           onHidePayModal();
-          postMessage('auth', true);
           message.success({ content: '支付成功!' });
-          localStorage.setItem('trial', order);
+          postMessage('auth', true);
+          saveTrial(_id, order);
           clearInterval(interval);
           order = '';
         }
@@ -41,6 +42,17 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
       order = '';
     };
   }, []);
+
+  function saveTrial(id: string, order: string) {
+    localforage.getItem('trial').then((value: any) => {
+      let trial = {};
+      if (value) trial = value;
+      localforage.setItem('trial', {
+        ...trial,
+        [id]: order,
+      });
+    });
+  }
 
   function getPayCode() {
     setSpinning(true);
@@ -87,13 +99,13 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, title
               />
             ),
           });
-          localStorage.setItem('trial', params.order || '');
+          saveTrial(tool._id, params.order || '');
         } else if (error === 'absent') message.error('不存在此订单号');
         else {
           message.success('成功!');
           onHidePayModal();
           postMessage('auth', user_type === 'vip' || user_type === 'trial');
-          localStorage.setItem('trial', params.order || '');
+          saveTrial(_id, params.order || '');
         }
       })
       .catch(() => {

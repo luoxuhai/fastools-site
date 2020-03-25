@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Tooltip, Collapse, Card, Avatar, Modal, Alert, Spin, message, notification } from 'antd';
+import { Button, Tooltip, Modal, Alert, Spin, message, notification } from 'antd';
 import { connect } from 'dva';
 import {
   StarOutlined,
@@ -13,16 +13,18 @@ import {
 // import encUtf8 from 'crypto-js/enc-utf8';
 // import modeEcb from 'crypto-js/mode-ecb';
 // import padPkcs7 from 'crypto-js/pad-pkcs7';
+import localforage from 'localforage';
 import { prefix } from '@/utils/request.js';
 import { queryTool, star } from '@/services/tool';
-import { queryVipExpires, IQueryVipExpires } from '@/services/user';
+import { queryVipExpires } from '@/services/user';
+import { IQueryVipExpires } from '@/services/data';
 import { openFeedback } from '@/components/Feedback';
 import PayModal from './components/PayModal';
+import Description from './components/Description';
 import Similarity from './components/Similarity';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { monitorConsole, postMessage, UnloadConfirm } from '@/utils/utils';
 import styles from './index.less';
-import tool from 'mock/tool';
 
 const buttons = [
   {
@@ -67,10 +69,16 @@ function hasFree(cost: string): boolean {
   } else return false;
 }
 
-function queryAccess(params?: IQueryVipExpires) {
+function queryAccess(params?: IQueryVipExpires | any) {
   queryVipExpires(params)
     .then(res => {
       postMessage('auth', res.user_type === 'vip' || res.user_type === 'trial');
+      if (res.error === 'absent')
+        localforage.getItem('trial').then((value: any) => {
+          if (value) delete value[params.toolId];
+          if (Object.keys(value).length === 0) localforage.removeItem('trial');
+          else localforage.setItem('trial', value);
+        });
     })
     .catch(() => {
       postMessage('auth', false);
@@ -87,7 +95,7 @@ class ToolDetailPage extends Component<IProps, IState> {
     iframeHeight: undefined,
     visibleInput: false,
     toolUrl: '',
-    alias: this.props.match.params.id
+    alias: this.props.match.params.id,
   };
   consoleInterval: any = null;
   accessInterval: any = null;
@@ -130,21 +138,25 @@ class ToolDetailPage extends Component<IProps, IState> {
             if (hasFree(this.cost)) break;
             const { tool }: any = this.state;
             const hide = message.loading({ content: '获取权限中...', duration: 0, key: 'access' });
-            const params: IQueryVipExpires = { order: localStorage.getItem('trial') || '', toolId: tool._id };
+            const params: IQueryVipExpires = { order: '', toolId: tool._id };
 
-            queryVipExpires(params)
-              .then(({ user_type }) => {
-                if (user_type === 'vip' || user_type === 'trial') {
-                  postMessage('auth', true);
-                  message.success({ content: '获取成功,请重新点击', key: 'access' });
-                } else this.handleOpenPayModal();
-              })
-              .catch(error => {
-                message.error('网络错误');
-              })
-              .finally(() => {
-                hide();
-              });
+            localforage.getItem('trial').then((value: any) => {
+              if (value) params.order = value[tool._id];
+
+              queryVipExpires(params)
+                .then(({ user_type }) => {
+                  if (user_type === 'vip' || user_type === 'trial') {
+                    postMessage('auth', true);
+                    message.success({ content: '获取权限成功,请重新点击', key: 'access' });
+                  } else this.handleOpenPayModal();
+                })
+                .catch(error => {
+                  message.error('网络错误');
+                })
+                .finally(() => {
+                  hide();
+                });
+            });
           }
           break;
         case 'status':
@@ -156,11 +168,15 @@ class ToolDetailPage extends Component<IProps, IState> {
             // 检测是否免费
             if (hasFree(this.cost)) break;
 
-            if (localStorage.getItem('trial') || token) {
-              const params: IQueryVipExpires = { order: localStorage.getItem('trial') || '', toolId: tool._id };
+            if (localStorage.getItem('fastools/trial') || token) {
+              const params: IQueryVipExpires = { order: '', toolId: tool._id };
 
-              queryAccess(params);
-              this.accessInterval = setInterval(() => queryAccess(params), 1000 * 60);
+              localforage.getItem('trial').then((value: any) => {
+                if (value) params.order = value[tool._id];
+
+                queryAccess(params);
+                this.accessInterval = setInterval(() => queryAccess(params), 1000 * 60);
+              });
             } else postMessage('auth', false);
           } else if (data.value === 'run') console.log('run');
           break;
@@ -177,25 +193,30 @@ class ToolDetailPage extends Component<IProps, IState> {
       }
     });
 
-    queryTool(alias).then(res => {
-      if (!res.tool) return;
-      this.cost = res.tool.cost;
-      hasFree(this.cost);
-      this.setState({
-        tool: res.tool,
-        toolUrl: `${prefix}/tools/static/${res.tool.alias}.html`,
-      });
+    queryTool(alias).then(({ tool }) => {
+      if (!tool) return;
+      this.cost = tool.cost;
+      this.setState(
+        {
+          tool: tool,
+          toolUrl: `${prefix}/tools/static/${tool.alias}.html`,
+        },
+        () => {
+          if (tool.direction_level === 1) this.openNotification();
+        },
+      );
       this.props.dispatch({
         type: 'global/setBreadcrumbName',
-        payload: res.tool.title,
+        payload: tool.title,
       });
-      document.title = res.tool.title + ' - 快用工具 - 又快又好用的在线工具网';
+      document.title = tool.title + ' - 快用工具 - 又快又好用的在线工具网';
     });
   }
 
   componentWillUnmount() {
     UnloadConfirm.remove();
     notification.destroy();
+    message.destroy();
     Modal.destroyAll();
     clearInterval(this.consoleInterval);
     clearInterval(this.accessInterval);
@@ -314,17 +335,7 @@ class ToolDetailPage extends Component<IProps, IState> {
   };
 
   render() {
-    const {
-      tool,
-      alias,
-      visibleHelp,
-      visibleFrame,
-      loading,
-      iframeHeight,
-      toolUrl,
-      visiblePayModal,
-      visibleInput,
-    }: IState = this.state;
+    const { tool, alias, visibleHelp, visibleFrame, loading, iframeHeight, toolUrl, visiblePayModal, visibleInput }: IState = this.state;
 
     return (
       <div className={styles.container} id="toolContainer">
@@ -370,18 +381,8 @@ class ToolDetailPage extends Component<IProps, IState> {
             showIcon
           />
         )}
-
-        <Collapse className={styles.collapse} defaultActiveKey={['0', '1']}>
-          <Collapse.Panel header="工具介绍" key="0">
-            <p aria-label="工具介绍">{tool.desc}</p>
-          </Collapse.Panel>
-          <Collapse.Panel header="使用说明" key="1">
-            <div aria-label="使用说明" dangerouslySetInnerHTML={{ __html: tool.direction }} />
-          </Collapse.Panel>
-        </Collapse>
-
+        <Description tool={tool} />
         <Similarity alias={alias} />
-
         <Modal
           title="支付"
           visible={visiblePayModal}

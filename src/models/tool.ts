@@ -1,5 +1,3 @@
-import { message } from 'antd';
-import localforage from 'localforage';
 import { queryTools } from '@/services/tool';
 
 export default {

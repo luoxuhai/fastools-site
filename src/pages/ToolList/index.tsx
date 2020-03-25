@@ -20,7 +20,7 @@ class ToolListPage extends Component {
       type: 'tool/queryTools',
       payload: {
         page: 1,
-        per_page: 9,
+        per_page: window.isSpider ? 1000 :9,
         tool_type: id,
         loadMore: false,
       },

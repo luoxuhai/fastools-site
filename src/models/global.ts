@@ -41,14 +41,15 @@ export default {
             type: 'tool/queryTools',
             payload: {
               page: 1,
-              per_page: 9,
+              per_page: window.isSpider ? 1000 :9,
               tool_type: name,
               loadMore: false,
             },
           });
-        try {
-          pushUrl();
-        } catch (error) {}
+        if (process.env.NODE_ENV === 'production')
+          try {
+            pushUrl();
+          } catch (error) {}
       });
     },
   },

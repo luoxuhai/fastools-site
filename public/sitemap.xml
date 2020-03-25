@@ -2,60 +2,64 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
         <loc>https://www.fastools.cn</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
         <changefreq>always</changefreq>
     </url>
     <url>
         <loc>https://www.fastools.cn/</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
         <changefreq>always</changefreq>
     </url>
     <url>
         <loc>https://www.fastools.cn/doc</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
         <changefreq>always</changefreq>
     </url>
     <url>
         <loc>https://www.fastools.cn/image</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
     </url>
     <url>
         <loc>https://www.fastools.cn/audio</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
         <changefreq>always</changefreq>
     </url>
     <url>
         <loc>https://www.fastools.cn/video</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
         <changefreq>always</changefreq>
     </url>
     <url>
         <loc>https://www.fastools.cn/other</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
         <changefreq>always</changefreq>
     </url>
     <url>
         <loc>https://www.fastools.cn/other/decryption</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
     </url>
     <url>
         <loc>https://www.fastools.cn/image/gif-compress</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
     </url>
     <url>
         <loc>https://www.fastools.cn/video/video-mute</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
     </url>
     <url>
         <loc>https://www.fastools.cn/video/audio-compress</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
     </url>
     <url>
         <loc>https://www.fastools.cn/video/docx-compress</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
     </url>
     <url>
         <loc>https://www.fastools.cn/video/pptx-compress</loc>
-        <lastmod>2020-03-13</lastmod>
+        <lastmod>2020-03-23</lastmod>
+    </url>
+    <url>
+        <loc>https://www.fastools.cn/image/svg2png</loc>
+        <lastmod>2020-03-23</lastmod>
     </url>
 </urlset>

@@ -1,5 +1,5 @@
 import request from '@/utils/request.js';
-import { IQueryVipExpires } from '@/services/user';
+import { IQueryVipExpires } from './data';
 
 export const queryPayCode = async (days: number, trial?: { toolId: string }) =>
   request('/v1/pay/native', { method: 'post', data: { days, trial } });

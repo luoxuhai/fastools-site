@@ -35,7 +35,7 @@ transform: translate3d(-50%, -50%, 0);}.double-bounce1,.double-bounce2 {width: 1
   </style>
 </head>
 <body>
-  <noscript>You need to enable JavaScript to run this app!</noscript>
+  <noscript>你需要启用JavaScript才能运行!</noscript>
   <div id="root"></div>
   <div class="skeleton">
     <div class="spinner">
@@ -48,12 +48,14 @@ transform: translate3d(-50%, -50%, 0);}.double-bounce1,.double-bounce2 {width: 1
       document.getElementsByTagName('body')[0].innerHTML = '<h1>请使用最新版<a href="https://www.google.cn/intl/zh-CN/chrome/" target="_blank">谷歌</a>、<a href="http://www.firefox.com.cn/" target="_blank">火狐</a>、<a href="https://browser.qq.com/" target="_blank">  QQ</a>、<a href="https://browser.360.cn/ee/" target="_blank">  360</a>&nbsp; 浏览器等现代浏览器</h1>';
 
     var _hmt = _hmt || [];
+    if (/fastools\.cn/.test(location.host)) {
     (function() {
       var hm = document.createElement("script");
       hm.src = "https://hm.baidu.com/hm.js?07db889a1fcb45513ac9d9eb31055765";
-      var s = document.getElementsByTagName("script")[0]; 
-      s.parentNode.insertBefore(hm, s);
+      var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
     })();
+  }
   </script>
   <script src="/qc-1.0.1.js" data-appid="101854393" charset="utf-8"></script>
 </body>

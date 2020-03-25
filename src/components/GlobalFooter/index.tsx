@@ -102,6 +102,14 @@ const links = [
     title: ' Chrome扩展插件下载',
     url: 'https://www.ijidi.cn/',
   },
+  {
+    title: ' 51源码',
+    url: 'http://www.51yma.cn',
+  },
+  {
+    title: ' 苹果手机赚钱软件下载',
+    url: 'https://www.zlh521.com/',
+  },
 ];
 
 export default () => {

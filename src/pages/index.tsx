@@ -4,8 +4,17 @@ import { connect } from 'dva';
 import { ToolList } from '@/components/ToolList';
 import Search from '@/components/Search';
 import styles from './index.less';
-import { queryTools, EToolType } from '@/services/tool';
+import { queryTools } from '@/services/tool';
 
+enum EToolType {
+  video = 'video',
+  audio = 'audio',
+  doc = 'doc',
+  image = 'image',
+  other = 'other',
+  new = 'new',
+  recommend = 'recommend',
+}
 class HomePage extends Component {
   state = {
     recommend: [],
@@ -24,7 +33,7 @@ class HomePage extends Component {
       type: 'tool/queryTools',
       payload: {
         page: 1,
-        per_page: 9,
+        per_page: window.isSpider ? 1000 : 9,
         tool_type: 'new',
         loadMore: false,
       },

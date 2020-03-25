@@ -1,6 +1,8 @@
 import localforage from 'localforage';
 import { supportCSS3, disableReactDevTools } from '@/utils/utils';
 
+window.isSpider = /Baiduspider|spider|360Spider|Googlebot|Googlebot-Mobile|Googlebot-Image/i.test(window.navigator.userAgent);
+
 localforage.config({
   name: 'fastools',
   driver: localforage.LOCALSTORAGE,

@@ -1,22 +1,5 @@
 import request from '@/utils/request.js';
-
-export enum EToolType {
-  video = 'video',
-  audio = 'audio',
-  doc = 'doc',
-  image = 'image',
-  other = 'other',
-  new = 'new',
-  recommend = 'recommend',
-}
-
-interface IQueryToolsParams {
-  tool_type?: EToolType;
-  page?: number;
-  per_page?: number;
-  similarity?: number;
-  alias?: string;
-}
+import { IQueryToolsParams } from './data';
 
 export const queryTools = async (params: IQueryToolsParams) => request('/v1/tools', { method: 'get', params });
 
