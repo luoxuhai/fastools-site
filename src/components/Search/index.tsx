@@ -4,9 +4,8 @@ import { SearchOutlined, EnterOutlined, LoadingOutlined, CloseCircleFilled } fro
 import Link from 'umi/link';
 import Highlighter from 'react-highlight-words';
 import { searchTool } from '@/services/tool';
+import { preventScroll } from '@/utils/utils';
 import styles from './index.less';
-
-const bodyEl: any = document.querySelector('body');
 
 const fullStyle = {
   height: 50,
@@ -114,12 +113,12 @@ export default ({ full = true }: any) => {
 
   function handleVisible() {
     setVisible(true);
-    bodyEl.style.overflow = 'hidden';
+    preventScroll(true);
   }
 
   function handleClose() {
     setVisible(false);
-    bodyEl.style.overflow = 'auto';
+    preventScroll(false);
   }
 
   return (

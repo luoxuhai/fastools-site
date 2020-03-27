@@ -80,7 +80,7 @@ export default withRouter(
 
     const breadcrumbItems = [
       <Breadcrumb.Item key="home">
-        <Link to="/">好用工具</Link>
+        <Link to="/">快用工具</Link>
       </Breadcrumb.Item>,
     ].concat(extraBreadcrumbItems);
 

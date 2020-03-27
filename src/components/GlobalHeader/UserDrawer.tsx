@@ -24,7 +24,7 @@ export default connect(({ login }: any) => ({ user: login.user }))(({ user, disp
   useEffect(() => {
     queryUserSpace().then(res => {
       if (!res._id) return;
-      setUserInfo({ ...userInfo, ...res});
+      setUserInfo({ ...userInfo, ...res });
       setLoading(false);
     });
   }, []);
@@ -65,27 +65,24 @@ export default connect(({ login }: any) => ({ user: login.user }))(({ user, disp
             }
             key={String(index)}
           >
-            {userInfo[item.dataKey] ? (
-              <List
-                itemLayout="horizontal"
-                dataSource={userInfo[item.dataKey]}
-                renderItem={(item: any) => (
-                  <List.Item>
-                    <List.Item.Meta
-                      avatar={<Avatar src={item.cover} />}
-                      title={
-                        <a href={`/${item.tool_type}/${item.alias}`} target="_blank">
-                          {item.title}
-                        </a>
-                      }
-                      description={<p className={styles.description}>{item.desc}</p>}
-                    />
-                  </List.Item>
-                )}
-              />
-            ) : (
-              <Empty description="空" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            )}
+            <List
+              itemLayout="horizontal"
+              dataSource={userInfo[item.dataKey]}
+              locale={{ emptyText: '暂无数据' }}
+              renderItem={(item: any) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<Avatar src={item.cover} />}
+                    title={
+                      <a href={`/${item.tool_type}/${item.alias}`} target="_blank">
+                        {item.title}
+                      </a>
+                    }
+                    description={<p className={styles.description}>{item.desc}</p>}
+                  />
+                </List.Item>
+              )}
+            />
           </Tabs.TabPane>
         ))}
       </Tabs>

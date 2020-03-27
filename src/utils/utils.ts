@@ -214,3 +214,8 @@ export class UnloadConfirm {
     window.removeEventListener('beforeunload', this.onListener);
   }
 }
+
+export function preventScroll(isHidden: boolean) {
+  const bodyEl: any = document.querySelector('body');
+  bodyEl.style.overflow = isHidden ? 'hidden' : 'auto';
+}

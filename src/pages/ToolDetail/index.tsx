@@ -3,37 +3,37 @@ import { Button, Tooltip, Modal, Alert, Spin, message, notification } from 'antd
 import { connect } from 'dva';
 import {
   StarOutlined,
-  MessageOutlined,
   ShareAltOutlined,
   StarFilled,
   QuestionCircleOutlined,
   QuestionCircleFilled,
+  CloseCircleOutlined,
+  FullscreenOutlined,
 } from '@ant-design/icons';
 // import AES from 'crypto-js/aes';
 // import encUtf8 from 'crypto-js/enc-utf8';
 // import modeEcb from 'crypto-js/mode-ecb';
 // import padPkcs7 from 'crypto-js/pad-pkcs7';
 import localforage from 'localforage';
+
 import { prefix } from '@/utils/request.js';
 import { queryTool, star } from '@/services/tool';
 import { queryVipExpires } from '@/services/user';
 import { IQueryVipExpires } from '@/services/data';
+import { IState, IProps } from './data';
 import { openFeedback } from '@/components/Feedback';
 import PayModal from './components/PayModal';
 import Description from './components/Description';
 import Similarity from './components/Similarity';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { monitorConsole, postMessage, UnloadConfirm } from '@/utils/utils';
+import { monitorConsole, postMessage, UnloadConfirm, preventScroll } from '@/utils/utils';
+import { hasFree, queryAccess, handleShare } from './utils';
 import styles from './index.less';
 
 const buttons = [
   {
     title: '收藏',
     icon: <StarOutlined />,
-  },
-  {
-    title: '反馈',
-    icon: <MessageOutlined />,
   },
   {
     title: '分享',
@@ -43,47 +43,11 @@ const buttons = [
     title: '使用说明',
     icon: <QuestionCircleOutlined />,
   },
+  {
+    title: '全屏',
+    icon: <FullscreenOutlined />,
+  },
 ];
-
-interface IProps {
-  dispatch: Function;
-  match: any;
-  token: string;
-}
-interface IState {
-  tool: any;
-  visibleHelp: boolean;
-  visibleFrame: boolean;
-  visiblePayModal: boolean;
-  loading: boolean;
-  visibleInput: boolean;
-  toolUrl: string;
-  alias: string;
-  iframeHeight: string | undefined;
-}
-
-function hasFree(cost: string): boolean {
-  if (cost === 'free') {
-    postMessage('auth', true);
-    return true;
-  } else return false;
-}
-
-function queryAccess(params?: IQueryVipExpires | any) {
-  queryVipExpires(params)
-    .then(res => {
-      postMessage('auth', res.user_type === 'vip' || res.user_type === 'trial');
-      if (res.error === 'absent')
-        localforage.getItem('trial').then((value: any) => {
-          if (value) delete value[params.toolId];
-          if (Object.keys(value).length === 0) localforage.removeItem('trial');
-          else localforage.setItem('trial', value);
-        });
-    })
-    .catch(() => {
-      postMessage('auth', false);
-    });
-}
 
 class ToolDetailPage extends Component<IProps, IState> {
   state = {
@@ -96,10 +60,11 @@ class ToolDetailPage extends Component<IProps, IState> {
     visibleInput: false,
     toolUrl: '',
     alias: this.props.match.params.id,
+    isFull: false,
   };
   consoleInterval: any = null;
   accessInterval: any = null;
-  cost: string = 'vip';
+  price: string = 'vip';
 
   componentDidMount() {
     const { alias } = this.state;
@@ -135,7 +100,7 @@ class ToolDetailPage extends Component<IProps, IState> {
         case 'auth':
           if (data.value === 'noaccess') this.handleOpenPayModal();
           if (data.value === undefined) {
-            if (hasFree(this.cost)) break;
+            if (hasFree(this.price)) break;
             const { tool }: any = this.state;
             const hide = message.loading({ content: '获取权限中...', duration: 0, key: 'access' });
             const params: IQueryVipExpires = { order: '', toolId: tool._id };
@@ -166,7 +131,7 @@ class ToolDetailPage extends Component<IProps, IState> {
               loading: false,
             });
             // 检测是否免费
-            if (hasFree(this.cost)) break;
+            if (hasFree(this.price)) break;
 
             if (localStorage.getItem('fastools/trial') || token) {
               const params: IQueryVipExpires = { order: '', toolId: tool._id };
@@ -195,7 +160,7 @@ class ToolDetailPage extends Component<IProps, IState> {
 
     queryTool(alias).then(({ tool }) => {
       if (!tool) return;
-      this.cost = tool.cost;
+      this.price = tool.price;
       this.setState(
         {
           tool: tool,
@@ -275,18 +240,17 @@ class ToolDetailPage extends Component<IProps, IState> {
         }
         break;
       case 1:
-        openFeedback({
-          customInfo: JSON.stringify({
-            toolName: tool.title,
-          }),
-        });
+        handleShare(tool.cover, tool.title);
         break;
       case 2:
-        message.success({ content: '已复制链接' });
-        break;
-      case 3:
         if (visibleHelp) return;
         this.openNotification();
+        break;
+      case 3:
+        this.setState({
+          isFull: true,
+        });
+        preventScroll(true);
     }
   };
 
@@ -334,8 +298,26 @@ class ToolDetailPage extends Component<IProps, IState> {
     });
   };
 
+  handleExitFull = () => {
+    this.setState({
+      isFull: false,
+    });
+    preventScroll(false);
+  };
+
   render() {
-    const { tool, alias, visibleHelp, visibleFrame, loading, iframeHeight, toolUrl, visiblePayModal, visibleInput }: IState = this.state;
+    const {
+      tool,
+      alias,
+      visibleHelp,
+      visibleFrame,
+      loading,
+      iframeHeight,
+      toolUrl,
+      visiblePayModal,
+      visibleInput,
+      isFull,
+    }: IState = this.state;
 
     return (
       <div className={styles.container} id="toolContainer">
@@ -344,7 +326,7 @@ class ToolDetailPage extends Component<IProps, IState> {
           <h2 className={styles.headerTitle}>{tool.title}</h2>
           {buttons.map((item, index) => (
             <Tooltip title={item.title} key={item.title}>
-              {index === 2 ? (
+              {index === 1 ? (
                 <CopyToClipboard className={styles.headerButton} text={location.href}>
                   <Button onClick={() => this.handleHeaderButton(index)} type="primary" shape="circle" size="large" icon={item.icon} />
                 </CopyToClipboard>
@@ -355,7 +337,7 @@ class ToolDetailPage extends Component<IProps, IState> {
                   type="primary"
                   shape="circle"
                   size="large"
-                  icon={index === 0 && tool.isStar ? <StarFilled /> : index === 3 && visibleHelp ? <QuestionCircleFilled /> : item.icon}
+                  icon={index === 0 && tool.isStar ? <StarFilled /> : index === 2 && visibleHelp ? <QuestionCircleFilled /> : item.icon}
                 />
               )}
             </Tooltip>
@@ -364,7 +346,7 @@ class ToolDetailPage extends Component<IProps, IState> {
         {visibleFrame ? (
           <Spin spinning={loading} tip="加载工具中...">
             <iframe
-              className={styles.iframe}
+              className={isFull ? styles.iframeFull : styles.iframe}
               id="tool"
               name="tool"
               style={{ height: iframeHeight }}
@@ -372,6 +354,13 @@ class ToolDetailPage extends Component<IProps, IState> {
               // src={`http://127.0.0.1:8001`}
               allow="payment"
             />
+            {isFull && (
+              <div className={styles.close} onClick={this.handleExitFull}>
+                <Tooltip title="退出全屏" placement="right">
+                  <CloseCircleOutlined />
+                </Tooltip>
+              </div>
+            )}
           </Spin>
         ) : (
           <Alert
