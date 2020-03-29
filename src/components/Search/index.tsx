@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { List, Tooltip, Empty } from 'antd';
+import { List, Tooltip, Empty, Skeleton } from 'antd';
 import { SearchOutlined, EnterOutlined, LoadingOutlined, CloseCircleFilled } from '@ant-design/icons';
 import Link from 'umi/link';
 import Highlighter from 'react-highlight-words';
+
 import { searchTool } from '@/services/tool';
 import { preventScroll } from '@/utils/utils';
 import styles from './index.less';
@@ -23,8 +24,8 @@ const lineStyle = {
 
 function SearchPane({ onClose }: any): JSX.Element {
   const [inputValue, setInputValue] = useState('');
-  const [tools, setTools]: any[] = useState([]);
-  const [keywords, setKeywords]: any[] = useState([]);
+  const [tools, setTools] = useState<any[]>([]);
+  const [keywords, setKeywords] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   function handleInput(e: any) {
@@ -33,6 +34,7 @@ function SearchPane({ onClose }: any): JSX.Element {
 
   function handleSearch() {
     setLoading(true);
+    setTools([1]);
     searchTool(inputValue).then(({ tools, keywords }) => {
       if (tools.length) {
         setTools(tools);
@@ -83,22 +85,24 @@ function SearchPane({ onClose }: any): JSX.Element {
           itemLayout="horizontal"
           dataSource={tools}
           renderItem={(item: any) => (
-            <Link to={`/${item.tool_type}/${item.alias}`} target="_blank" title={item.title}>
-              <List.Item className={styles.listItem}>
-                <List.Item.Meta
-                  avatar={<img className={styles.listItemIcon} src={item.cover} alt={item.title} />}
-                  title={
-                    <Highlighter
-                      highlightClassName={styles.highlight}
-                      searchWords={keywords}
-                      autoEscape={true}
-                      textToHighlight={item.title}
-                    />
-                  }
-                  description={item.desc + '...'}
-                />
-              </List.Item>
-            </Link>
+            <Skeleton loading={loading} active title={{ width: '8em' }} avatar={{ shape: 'circle' }} paragraph={{ rows: 1 }}>
+              <Link to={`/${item.tool_type}/${item.alias}`} target="_blank" title={item.title}>
+                <List.Item className={styles.listItem}>
+                  <List.Item.Meta
+                    avatar={<img className={styles.listItemIcon} src={item.cover} alt={item.title} />}
+                    title={
+                      <Highlighter
+                        highlightClassName={styles.highlight}
+                        searchWords={keywords}
+                        autoEscape={true}
+                        textToHighlight={item.title}
+                      />
+                    }
+                    description={item.desc + '...'}
+                  />
+                </List.Item>
+              </Link>
+            </Skeleton>
           )}
         />
       ) : (

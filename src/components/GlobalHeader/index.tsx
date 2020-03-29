@@ -9,8 +9,8 @@ import UserDrawer from './UserDrawer';
 import Search from '@/components/Search';
 import styles from './index.less';
 
-const logo = 'https://static.fastools.cn/images/logo.svg';
-const logoLarge = 'https://static.fastools.cn/images/logo-large.png?x-oss-process=style/fade';
+const logo = 'https://static.fastools.cn/images/logo.png';
+const logoLarge = 'https://static.fastools.cn/images/logo-large.png';
 const navs = [
   {
     title: '首 页',

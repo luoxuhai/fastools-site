@@ -20,7 +20,7 @@ class ToolListPage extends Component {
       type: 'tool/queryTools',
       payload: {
         page: 1,
-        per_page: window.isSpider ? 1000 :9,
+        per_page: window.isSpider ? 1000 : 9,
         tool_type: id,
         loadMore: false,
       },
@@ -50,16 +50,14 @@ class ToolListPage extends Component {
     const { tools, currentPage, totalPage, loading }: any = this.props;
 
     return (
-      <Spin spinning={!tools.length} tip="加载中...">
-        <div className={styles.container}>
-          <ToolList tools={tools} title="全部" />
-          {currentPage < totalPage && tools.length && (
-            <Button className={styles.loadMore} loading={loading} onClick={this.handleLoadMore} type="primary" shape="round" size="large">
-              加载更多
-            </Button>
-          )}
-        </div>
-      </Spin>
+      <div className={styles.container}>
+        <ToolList tools={tools} title="全部" />
+        {currentPage < totalPage && tools.length && (
+          <Button className={styles.loadMore} loading={loading} onClick={this.handleLoadMore} type="primary" shape="round" size="large">
+            加载更多
+          </Button>
+        )}
+      </div>
     );
   }
 }

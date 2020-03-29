@@ -7,8 +7,6 @@ import { getCountDown } from '@/utils/utils';
 import styles from './index.less';
 import { queryVerificationCode, login } from '@/services/user';
 
-const QQIcon = 'https://static.fastools.cn/images/QQ.svg';
-
 let tel = '';
 let codeInterval: any;
 
@@ -196,7 +194,9 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
         <ul className={styles.othorLogin}>
           <Tooltip title="QQ登录" placement="top">
             <li id="loginButton" onClick={QQlogin}>
-              <img src={QQIcon} alt="QQ登录" />
+              <svg className="icon" aria-hidden="true">
+                <use href="#iconQQ" />
+              </svg>
               <h4>QQ登录</h4>
             </li>
           </Tooltip>

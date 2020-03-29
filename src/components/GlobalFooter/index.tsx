@@ -1,38 +1,46 @@
 import React from 'react';
 import { Layout, Divider, Popover } from 'antd';
-import { CommentOutlined, UserOutlined, WechatOutlined } from '@ant-design/icons';
 import styles from './index.less';
 
 const qrcode = 'https://static.fastools.cn/images/qrcode.jpg?x-oss-process=style/fade';
-const QQIcon = 'https://static.fastools.cn/images/QQ.svg';
 
 const contact = [
   {
-    title: '客服QQ1：1852067571',
+    title: '客服QQ: 1852067571',
+    icon: 'iconQQ',
     url: 'tencent://message/?uin=1852067571&Site=Sambow&Menu=yes',
     qrcode: 'https://static.fastools.cn/images/1852067571.jpg',
   },
   {
-    title: '客服QQ2：984804616',
-    url: 'tencent://message/?uin=984804616&Site=Sambow&Menu=yes',
-    qrcode: 'https://static.fastools.cn/images/984804616.jpg',
-  },
-  {
-    title: 'QQ交流群：617853966',
+    title: 'QQ交流群: 617853966',
+    icon: 'iconqqqun',
     url: '//shang.qq.com/wpa/qunwpa?idkey=a8b4e205ac4b58351e1b8acdf672be7ee82f724d627429704279ca78596775ff',
     qrcode: 'https://static.fastools.cn/images/617853966.png',
   },
   {
     title: '微信小程序',
+    icon: 'iconweixin',
     url: '',
     qrcode: 'https://static.fastools.cn/images/miniapp.jpg',
   },
   {
+    title: '邮箱: support@fastools.cn',
+    icon: 'iconhuabanfuben',
+    url: 'mailto:support@fastools.cn',
+  },
+  {
+    title: 'Telegram',
+    icon: 'icontelegram',
+    url: 'https://t.me/fastools',
+  },
+  {
     title: '在线讨论',
+    icon: 'icongitter',
     url: 'https://gitter.im/fastools/community',
   },
   {
     title: '关于我们',
+    icon: 'iconguanyuwomen1',
     url: 'https://support.qq.com/products/126066/team/',
   },
 ];
@@ -41,10 +49,6 @@ const links = [
   {
     title: '在线流程图',
     url: 'http://app.liuchengtu.com/',
-  },
-  {
-    title: '清明上河图',
-    url: 'https://www.eyoupu.com/',
   },
   {
     title: '桔子SEO工具',
@@ -63,12 +67,8 @@ const links = [
     url: 'https://www.ageeye.cn/',
   },
   {
-    title: '智能PPT',
-    url: 'http://jm.wps.cn/welcome',
-  },
-  {
-    title: '卡巴斯基实验室',
-    url: 'https://cybermap.kaspersky.com/',
+    title: '新秀导航',
+    url: 'http://www.xinxiudh.com',
   },
   {
     title: '上线了',
@@ -87,28 +87,28 @@ const links = [
     url: 'http://zhongguose.com/',
   },
   {
-    title: 'ProcessOn',
-    url: 'https://www.processon.com/',
-  },
-  {
     title: '微信小游戏在线制作',
     url: 'https://gamemaker.weixin.qq.com/ide#/scan',
   },
   {
-    title: '电鸭社区',
-    url: 'https://eleduck.com/',
-  },
-  {
-    title: ' Chrome扩展插件下载',
+    title: 'Chrome扩展插件下载',
     url: 'https://www.ijidi.cn/',
   },
   {
-    title: ' 51源码',
+    title: '51源码',
     url: 'http://www.51yma.cn',
   },
   {
-    title: ' 苹果手机赚钱软件下载',
+    title: '苹果手机赚钱软件下载',
     url: 'https://www.zlh521.com/',
+  },
+  {
+    title: '鹏少资源网',
+    url: 'https://www.jokerps.com/',
+  },
+  {
+    title: '牛站导航',
+    url: 'https://www.niuzdh.com/',
   },
 ];
 
@@ -124,30 +124,20 @@ export default () => {
         <ul>
           {contact.map((item, index) => (
             <li key={item.title}>
-              {index >= 4 ? (
-                <>
-                  {index === 4 ? <CommentOutlined className={styles.qqIcon} /> : <UserOutlined className={styles.qqIcon} />}
-                  &nbsp;&nbsp;
+              <svg className="icon" aria-hidden="true">
+                <use href={`#${item.icon}`} />
+              </svg>
+              &nbsp;&nbsp;
+              {index >= 3 ? (
+                <a href={item.url} target="_blank" title={item.title}>
+                  {item.title}
+                </a>
+              ) : (
+                <Popover content={<img width="150px" src={item.qrcode} />}>
                   <a href={item.url} target="_blank" title={item.title}>
                     {item.title}
                   </a>
-                </>
-              ) : (
-                <>
-                  {index === 3 ? (
-                    <>
-                      <WechatOutlined />
-                    </>
-                  ) : (
-                    <img className={styles.qqIcon} src={QQIcon} />
-                  )}
-                  <Popover content={<img width="150px" src={item.qrcode} />}>
-                    &nbsp;&nbsp;
-                    <a href={item.url} target="_blank" title={item.title}>
-                      {item.title}
-                    </a>
-                  </Popover>
-                </>
+                </Popover>
               )}
             </li>
           ))}

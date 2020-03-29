@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Tooltip, Modal, Alert, Spin, message, notification } from 'antd';
+import { Button, Tooltip, Modal, Alert, Spin, Skeleton, message, notification } from 'antd';
 import { connect } from 'dva';
 import {
   StarOutlined,
@@ -64,11 +64,12 @@ class ToolDetailPage extends Component<IProps, IState> {
   };
   consoleInterval: any = null;
   accessInterval: any = null;
-  price: string = 'vip';
+  price = 0.99;
 
   componentDidMount() {
     const { alias } = this.state;
 
+    window.addEventListener('popstate', this.listenerPopstate);
     UnloadConfirm.set();
     process.env.NODE_ENV === 'production' &&
       (this.consoleInterval = monitorConsole(
@@ -127,9 +128,17 @@ class ToolDetailPage extends Component<IProps, IState> {
         case 'status':
           const { tool }: any = this.state;
           if (data.value === 'loaded') {
-            this.setState({
-              loading: false,
-            });
+            this.setState(
+              {
+                loading: false,
+              },
+              () => {
+                setTimeout(() => {
+                  if (location.search === '?fullscreen') this.handleOpenFull();
+                }, 400);
+              },
+            );
+
             // 检测是否免费
             if (hasFree(this.price)) break;
 
@@ -185,11 +194,26 @@ class ToolDetailPage extends Component<IProps, IState> {
     Modal.destroyAll();
     clearInterval(this.consoleInterval);
     clearInterval(this.accessInterval);
+    window.removeEventListener('popstate', this.listenerPopstate);
     this.props.dispatch({
       type: 'global/setBreadcrumbName',
       payload: '',
     });
   }
+
+  listenerPopstate = () => {
+    if (location.search === '?fullscreen') {
+      this.setState({
+        isFull: true,
+      });
+      preventScroll(true);
+    } else {
+      this.setState({
+        isFull: false,
+      });
+      preventScroll(false);
+    }
+  };
 
   openNotification = () => {
     const { tool }: IState = this.state;
@@ -247,10 +271,8 @@ class ToolDetailPage extends Component<IProps, IState> {
         this.openNotification();
         break;
       case 3:
-        this.setState({
-          isFull: true,
-        });
-        preventScroll(true);
+        history.pushState('fullscreen', '', `${location.href}?fullscreen`);
+        this.handleOpenFull();
     }
   };
 
@@ -298,11 +320,19 @@ class ToolDetailPage extends Component<IProps, IState> {
     });
   };
 
+  handleOpenFull = () => {
+    this.setState({
+      isFull: true,
+    });
+    preventScroll(true);
+  };
+
   handleExitFull = () => {
     this.setState({
       isFull: false,
     });
     preventScroll(false);
+    history.back();
   };
 
   render() {
@@ -322,8 +352,10 @@ class ToolDetailPage extends Component<IProps, IState> {
     return (
       <div className={styles.container} id="toolContainer">
         <header className={styles.header}>
-          <img className={styles.headerCover} src={tool.cover} alt={styles.title} />
-          <h2 className={styles.headerTitle}>{tool.title}</h2>
+          <Skeleton active title={{ width: '8em' }} avatar={{ shape: 'circle' }} paragraph={false} loading={!tool.title}>
+            <img className={styles.headerCover} src={tool.cover} alt={styles.title} />
+            <h2 className={styles.headerTitle}>{tool.title}</h2>
+          </Skeleton>
           {buttons.map((item, index) => (
             <Tooltip title={item.title} key={item.title}>
               {index === 1 ? (
