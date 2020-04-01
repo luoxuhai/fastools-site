@@ -51,14 +51,6 @@ const links = [
     url: 'http://app.liuchengtu.com/',
   },
   {
-    title: '桔子SEO工具',
-    url: 'https://seo.juziseo.com/',
-  },
-  {
-    title: '海外服务器',
-    url: 'https://www.wwwroot.com',
-  },
-  {
     title: '书格',
     url: 'https://new.shuge.org/',
   },
@@ -75,32 +67,20 @@ const links = [
     url: 'https://www.sxl.cn/',
   },
   {
-    title: '壹伴编辑器',
-    url: 'https://yiban.io/',
-  },
-  {
     title: '古典文学名著阅读',
     url: 'https://classics.furuzix.top/',
   },
   {
-    title: '中国色',
-    url: 'http://zhongguose.com/',
+    title: '啃芝士',
+    url: 'https://www.kenzhishi.com/',
+  },
+  {
+    title: '扩展迷',
+    url: 'https://www.extfans.com/',
   },
   {
     title: '微信小游戏在线制作',
     url: 'https://gamemaker.weixin.qq.com/ide#/scan',
-  },
-  {
-    title: 'Chrome扩展插件下载',
-    url: 'https://www.ijidi.cn/',
-  },
-  {
-    title: '51源码',
-    url: 'http://www.51yma.cn',
-  },
-  {
-    title: '苹果手机赚钱软件下载',
-    url: 'https://www.zlh521.com/',
   },
   {
     title: '鹏少资源网',
@@ -109,6 +89,10 @@ const links = [
   {
     title: '牛站导航',
     url: 'https://www.niuzdh.com/',
+  },
+  {
+    title: '黑白导航网',
+    url: 'http://www.qqhbylw.com/',
   },
 ];
 

@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { Layout, BackTop, Breadcrumb, Spin, Modal, Tooltip, notification } from 'antd';
+import { ArrowUpOutlined } from '@ant-design/icons';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import withRouter from 'umi/withRouter';
+
 import GlobalFooter from '@/components/GlobalFooter';
 import GlobalHeader from '@/components/GlobalHeader';
 import Feedback from '@/components/Feedback';
@@ -103,7 +105,9 @@ export default withRouter(
             <div>{props.children}</div>
           </Layout.Content>
           <Tooltip className={styles.backtopContainer} title="返回顶部" placement="left">
-            <BackTop className={styles.backtop} />
+            <BackTop className={styles.backtop}>
+              <ArrowUpOutlined />
+            </BackTop>
           </Tooltip>
           <Feedback />
           <Modal

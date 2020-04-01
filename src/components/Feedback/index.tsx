@@ -1,5 +1,7 @@
 import React from 'react';
 import { Tooltip } from 'antd';
+import { MessageOutlined } from '@ant-design/icons';
+
 import Tucao from '@/utils/tucao.js';
 import styles from './index.less';
 
@@ -25,7 +27,7 @@ export default () => {
   return (
     <div className={styles.feedback} onClick={() => openFeedback()}>
       <Tooltip title="反馈建议" placement="left">
-        <div className={styles.img}></div>
+        <MessageOutlined className={styles.icon} />
       </Tooltip>
     </div>
   );

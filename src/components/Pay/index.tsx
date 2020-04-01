@@ -11,25 +11,25 @@ const pays = [
   {
     title: '包年',
     tip: '12个月(365天) - 享全站工具',
-    value: 49.99,
+    value: 29.99,
     days: 365,
   },
   {
     title: '包半年',
     tip: '6个月(180天) - 享全站工具',
-    value: 29.99,
+    value: 19.99,
     days: 180,
   },
   {
     title: '包季',
     tip: '3个月(90天) - 享全站工具',
-    value: 19.99,
+    value: 11.99,
     days: 90,
   },
   {
     title: '包月',
     tip: '1个月(30天) - 享全站工具',
-    value: 9.99,
+    value: 5.99,
     days: 30,
   },
 ];
@@ -39,7 +39,7 @@ let interval: any;
 let paySuccess = false;
 
 export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispatch }: any) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(3);
   const [payCode, setPayCode] = useState('');
   const [spinning, setSpinning] = useState(true);
 
@@ -94,10 +94,6 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
     getPayCode(index);
   }
 
-  function handleDownloadQRcode(src: string) {
-    download(src, '微信扫码支付');
-  }
-
   return (
     <>
       <Row gutter={16}>
@@ -127,8 +123,6 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
           <Spin spinning={spinning}>
             <div
               className={styles.QRcodePayImg}
-              onMouseDown={() => handleDownloadQRcode(payCode)}
-              onTouchStart={() => handleDownloadQRcode(payCode)}
               style={{ backgroundImage: `url(${payCode})` }}
             ></div>
           </Spin>
