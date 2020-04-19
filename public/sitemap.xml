@@ -30,18 +30,6 @@
         <changefreq>always</changefreq>
     </url>
     <url>
-        <loc>https://www.fastools.cn/doc/docx-compress</loc>
-        <lastmod>2020-03-29</lastmod>
-    </url>
-    <url>
-        <loc>https://www.fastools.cn/doc/pptx-compress</loc>
-        <lastmod>2020-03-29</lastmod>
-    </url>
-    <url>
-        <loc>https://www.fastools.cn/doc/xlsx-compress</loc>
-        <lastmod>2020-03-29</lastmod>
-    </url>
-    <url>
         <loc>https://www.fastools.cn/doc/epub-read</loc>
         <lastmod>2020-03-29</lastmod>
     </url>
@@ -150,19 +138,11 @@
         <lastmod>2020-03-29</lastmod>
     </url>
     <url>
-        <loc>https://www.fastools.cn/image/gif-compress</loc>
-        <lastmod>2020-03-29</lastmod>
-    </url>
-    <url>
         <loc>https://www.fastools.cn/other/compress</loc>
         <lastmod>2020-03-29</lastmod>
     </url>
     <url>
         <loc>https://www.fastools.cn/other/uncompress</loc>
-        <lastmod>2020-03-29</lastmod>
-    </url>
-    <url>
-        <loc>https://www.fastools.cn/other/decryption</loc>
         <lastmod>2020-03-29</lastmod>
     </url>
     <url>

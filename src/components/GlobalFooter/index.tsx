@@ -68,7 +68,7 @@ const links = [
   },
   {
     title: '古典文学名著阅读',
-    url: 'https://classics.furuzix.top/',
+    url: 'https://classics.fastools.cn/',
   },
   {
     title: '啃芝士',

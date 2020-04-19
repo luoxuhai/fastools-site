@@ -77,7 +77,7 @@ const errorHandler = error => {
  * 配置request请求时的默认参数
  */
 
-export const prefix = process.env.NODE_ENV === 'production' ? 'https://api.fastools.cn' : 'http://127.0.0.1:8099';
+export const prefix = process.env.NODE_ENV === 'production' ? 'https://www.fastools.cn/api' : 'http://127.0.0.1:8099';
 
 const request = extend({
   prefix, // http://testluo.xiaomy.net

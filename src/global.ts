@@ -34,7 +34,7 @@ function initUserInfo() {
 
 initUserInfo();
 
-window.addEventListener('resize', e => {
+window.addEventListener('resize', (e) => {
   window.g_app._store.dispatch({
     type: 'global/setInnerWidth',
     payload: e.target.innerWidth,
@@ -60,7 +60,27 @@ if (hiddenProperty) {
   });
 }
 
-window.addEventListener('sw.updated', e => {
+window.addEventListener('sw.updated', (e) => {
   console.log('sw.updated');
   e.detail.update();
 });
+
+// const date = new Date();
+// if (location.pathname === '/' && date.getMonth() === 3 && date.getDate() > 3 && date.getDate() < 7) {
+//   const style: Element = document.createElement('style');
+//   style.appendChild(
+//     document.createTextNode(`
+//   html {
+// 	filter: grayscale(100%);
+// 	-webkit-filter: grayscale(100%);
+// 	-moz-filter: grayscale(100%);
+// 	-ms-filter: grayscale(100%);
+// 	-o-filter: grayscale(100%);
+// 	filter: url("data:image/svg+xml;
+// 	utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+// 	filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+// 	-webkit-filter: grayscale(1);
+// }`),
+//   );
+//   document.head.appendChild(style);
+// }

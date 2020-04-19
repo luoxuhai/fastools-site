@@ -3,10 +3,11 @@ import { Button, Spin, Input, Popover, Alert, Modal, message } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { connect } from 'dva';
 import localforage from 'localforage';
+
 import styles from './PayModal.less';
 import { queryPayCode, queryPayInfo, queryTrialOrder } from '@/services/pay';
 import { IQueryVipExpires } from '@/services/data';
-import { download, postMessage } from '@/utils/utils';
+import { postMessage } from '@/utils/utils';
 
 const helpImage = 'https://static.fastools.cn/images/help-order.jpg';
 let order: string;
@@ -118,10 +119,11 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, price
         {visibleInput ? (
           <div>
             <div className={styles.inputContainer}>
-              <Input className={styles.input} onChange={handleInputChange} autoFocus placeholder="请输入单号" maxLength={40} />
+              <Input className={styles.input} onChange={handleInputChange} autoFocus placeholder="请输入商户单号" maxLength={40} />
               <Popover
-                title="单号查看帮助"
+                title="单号查看帮助(打开微信订单)"
                 placement="right"
+                trigger="click"
                 content={
                   <>
                     <img width="300px" src={helpImage} />

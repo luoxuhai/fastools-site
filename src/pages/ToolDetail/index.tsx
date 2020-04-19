@@ -71,28 +71,31 @@ class ToolDetailPage extends Component<IProps, IState> {
 
     window.addEventListener('popstate', this.listenerPopstate);
     UnloadConfirm.set();
-    process.env.NODE_ENV === 'production' &&
-      (this.consoleInterval = monitorConsole(
-        () => {
-          this.setState({
-            visibleFrame: false,
-          });
-          Modal.warning({
-            title: '警告',
-            content: '请按F12键或其他方式关闭控制台!',
-            okText: '知道了',
-          });
-        },
-        () => {
-          this.setState({
-            visibleFrame: true,
-          });
-          Modal.destroyAll();
-        },
-      ).init());
+    localforage.getItem('admin').then(res => {
+      if (res !== 'bao')
+        process.env.NODE_ENV === 'production' &&
+          (this.consoleInterval = monitorConsole(
+            () => {
+              this.setState({
+                visibleFrame: false,
+              });
+              Modal.warning({
+                title: '警告',
+                content: '请按F12键或其他方式关闭控制台!',
+                okText: '知道了',
+              });
+            },
+            () => {
+              this.setState({
+                visibleFrame: true,
+              });
+              Modal.destroyAll();
+            },
+          ).init());
+    });
 
     window.addEventListener('message', (event: any) => {
-      if (!/http:\/\/127\.0\.0\.1:8099|https:\/\/api\.fastools\.cn/.test(event.origin)) return;
+      if (!/http:\/\/127\.0\.0\.1:8099|https:\/\/www\.fastools\.cn/.test(event.origin)) return;
 
       const { token }: any = this.props;
       const data = event.data;
@@ -384,7 +387,8 @@ class ToolDetailPage extends Component<IProps, IState> {
               style={{ height: iframeHeight }}
               src={toolUrl}
               // src={`http://127.0.0.1:8001`}
-              allow="payment"
+              frameBorder={0}
+              importance="low"
             />
             {isFull && (
               <div className={styles.close} onClick={this.handleExitFull}>
