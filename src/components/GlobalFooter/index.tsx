@@ -6,17 +6,17 @@ const qrcode = 'https://static.fastools.cn/images/qrcode.jpg?x-oss-process=style
 
 const contact = [
   {
-    title: '客服QQ: 1852067571',
+    title: '客服QQ(定制工具、小程序等): 1852067571',
     icon: 'iconQQ',
     url: 'tencent://message/?uin=1852067571&Site=Sambow&Menu=yes',
     qrcode: 'https://static.fastools.cn/images/1852067571.jpg',
   },
-  {
-    title: 'QQ交流群: 617853966',
-    icon: 'iconqqqun',
-    url: '//shang.qq.com/wpa/qunwpa?idkey=a8b4e205ac4b58351e1b8acdf672be7ee82f724d627429704279ca78596775ff',
-    qrcode: 'https://static.fastools.cn/images/617853966.png',
-  },
+  // {
+  //   title: 'QQ交流群: 617853966',
+  //   icon: 'iconqqqun',
+  //   url: '//shang.qq.com/wpa/qunwpa?idkey=a8b4e205ac4b58351e1b8acdf672be7ee82f724d627429704279ca78596775ff',
+  //   qrcode: 'https://static.fastools.cn/images/617853966.png',
+  // },
   {
     title: '微信小程序',
     icon: 'iconweixin',
@@ -27,11 +27,6 @@ const contact = [
     title: '邮箱: support@fastools.cn',
     icon: 'iconhuabanfuben',
     url: 'mailto:support@fastools.cn',
-  },
-  {
-    title: 'Telegram',
-    icon: 'icontelegram',
-    url: 'https://t.me/fastools',
   },
   {
     title: '在线讨论',
@@ -46,6 +41,10 @@ const contact = [
 ];
 
 const links = [
+  {
+    title: '悟空智能数据分析',
+    url: 'https://wk.phitrellis.com/',
+  },
   {
     title: '在线流程图',
     url: 'http://app.liuchengtu.com/',
@@ -112,7 +111,7 @@ export default () => {
                 <use href={`#${item.icon}`} />
               </svg>
               &nbsp;&nbsp;
-              {index >= 3 ? (
+              {index >= 2 ? (
                 <a href={item.url} target="_blank" title={item.title}>
                   {item.title}
                 </a>

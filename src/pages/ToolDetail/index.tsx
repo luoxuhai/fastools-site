@@ -176,7 +176,8 @@ class ToolDetailPage extends Component<IProps, IState> {
       this.setState(
         {
           tool: tool,
-          toolUrl: `${prefix}/tools/static/${tool.alias}.html`,
+          toolUrl: tool.url || `${prefix}/tools/static/${tool.alias}.html`,
+          loading: !tool.url,
         },
         () => {
           if (tool.direction_level === 1) this.openNotification();

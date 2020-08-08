@@ -155,9 +155,9 @@ export default connect(({ login }: any) => ({ ...login }))(({ tool: { _id, price
               </p>
               <p>支持使用微信扫码支付</p>
               <p>
-                客服QQ群:
-                <a href="//shang.qq.com/wpa/qunwpa?idkey=a8b4e205ac4b58351e1b8acdf672be7ee82f724d627429704279ca78596775ff" target="_blank">
-                  617853966
+                客服QQ:
+                <a href="tencent://message/?uin=1852067571&Site=Sambow&Menu=yes" target="_blank">
+                1852067571
                 </a>
               </p>
             </div>

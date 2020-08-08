@@ -11,25 +11,25 @@ const pays = [
   {
     title: '包年',
     tip: '12个月(365天) - 享全站工具',
-    value: 29.99,
+    value: 49.99,
     days: 365,
   },
   {
     title: '包半年',
     tip: '6个月(180天) - 享全站工具',
-    value: 19.99,
+    value: 29.99,
     days: 180,
   },
   {
     title: '包季',
     tip: '3个月(90天) - 享全站工具',
-    value: 11.99,
+    value: 19.99,
     days: 90,
   },
   {
     title: '包月',
     tip: '1个月(30天) - 享全站工具',
-    value: 5.99,
+    value: 9.99,
     days: 30,
   },
 ];
@@ -121,18 +121,15 @@ export default connect(({ login }: any) => ({ ...login }))(({ token, user, dispa
         <h3 className={styles.payTitle}>扫码支付</h3>
         <div className={styles.QRcodePay}>
           <Spin spinning={spinning}>
-            <div
-              className={styles.QRcodePayImg}
-              style={{ backgroundImage: `url(${payCode})` }}
-            ></div>
+            <div className={styles.QRcodePayImg} style={{ backgroundImage: `url(${payCode})` }}></div>
           </Spin>
           <div className={styles.payInfo}>
             <p className={styles.money}>{pays[currentIndex].value}￥</p>
             <p>支持使用微信扫码支付</p>
             <p>
-              客服QQ群:
-              <a href="//shang.qq.com/wpa/qunwpa?idkey=a8b4e205ac4b58351e1b8acdf672be7ee82f724d627429704279ca78596775ff" target="_blank">
-                617853966
+              客服QQ:
+              <a href="tencent://message/?uin=1852067571&Site=Sambow&Menu=yes" target="_blank">
+                1852067571
               </a>
             </p>
           </div>
