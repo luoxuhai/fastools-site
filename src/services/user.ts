@@ -9,6 +9,6 @@ export const queryVipExpires = async (params?: IQueryVipExpires) => request('/v1
 
 export const login = async (data: ILoginPayload) => request('/v1/users/login', { method: 'post', data });
 
-export const queryVerificationCode = async (params: { tel: string }) => request('/v1/users/verify_code', { method: 'get', params });
+export const queryVerificationCode = async (params: { tel?: string, email?: string }) => request('/v1/users/verify_code', { method: 'get', params });
 
 export const refreshToken = async () => request('/v1/users/token', { method: 'put' });

@@ -32,7 +32,13 @@ const codeMessage = {
 let count = 0;
 
 const errorHandler = error => {
-  const { response = {} } = error;
+  let { response = {} } = error;
+
+  if (error.message === 'Failed to fetch') {
+    router.replace('/exception/500');
+    return;
+  }
+
   const { status, statusText } = response;
 
   console.error(process.env.NODE_ENV === 'production' ? statusText : codeMessage[status]);

@@ -34,7 +34,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
       setVisible(true);
     } else {
       setValidateStatusTel('error');
-      setHelpTextTel('请输入手机号码!');
+      setHelpTextTel('请输入邮箱!');
     }
   }
 
@@ -85,8 +85,8 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
 
   function handleOK() {
     setVisible(false);
-
-    codeInterval = getCountDown(120, (time: number) => {
+    message.success('验证码已发送至您的邮箱');
+    codeInterval = getCountDown(240, (time: number) => {
       if (time === 0) {
         setLoadingCode(false);
         setButtonText('获取验证码');
@@ -103,6 +103,8 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
       payload: true,
     });
   }
+
+  function EmailLogin() {}
 
   const onFinish = (values: any) => {
     setLoadingLogin(true);
@@ -125,7 +127,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
           setHelpTextCode('验证码错误!');
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       })
       .finally(() => {
@@ -163,13 +165,14 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
             rules={[
               {
                 required: true,
-                pattern: /^1(3|4|5|7|8)\d{9}$/,
+                // pattern: /^1(3|4|5|7|8)\d{9}$/,
+                pattern: /^([a-zA-Z\d])(\w|\-)+@[a-zA-Z\d]+\.[a-zA-Z]{2,4}$/,
                 whitespace: true,
-                message: '手机号码错误!',
+                message: '邮箱号错误!',
               },
             ]}
           >
-            <Input className={styles.input} onChange={handleInputChange} placeholder="请输入您的手机号码" type="tel" maxLength={11} />
+            <Input className={styles.input} onChange={handleInputChange} placeholder="请输入您的电子邮箱" type="tel" maxLength={32} />
           </Form.Item>
           <div className={styles.verificationCodeContainer}>
             <Form.Item
@@ -207,7 +210,7 @@ export default connect(({ global }: any) => ({ loginPaneVisible: global.loginPan
           visible={visible}
           onOk={handleOK}
           onCancel={() => setVisible(false)}
-          onVerificationCode={() => queryVerificationCode({ tel }).catch(() => message.error({ content: '请1小时后再试!' }))}
+          onVerificationCode={() => queryVerificationCode({ email: tel }).catch(() => message.error({ content: '请1小时后再试!' }))}
         />
       )}
     </>

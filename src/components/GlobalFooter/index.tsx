@@ -89,10 +89,6 @@ const links = [
     title: '牛站导航',
     url: 'https://www.niuzdh.com/',
   },
-  {
-    title: '黑白导航网',
-    url: 'http://www.qqhbylw.com/',
-  },
 ];
 
 export default () => {
