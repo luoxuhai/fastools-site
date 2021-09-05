@@ -1,0 +1,22 @@
+{
+  "name": "快用工具 - 又快又好用的在线工具",
+  "short_name": "快用工具",
+  "start_url": "/?utm_source=homescreen",
+  "display": "standalone",
+  "theme_color": "#4fc08d",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "512x512"
+    }
+  ]
+}
